@@ -1,14 +1,18 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 import { Schema, model } from 'mongoose';
-import { TRaised } from '../Interfaces/schema.interface';
+import { TMedia } from '../Interfaces/schema.interface';
 
-const raisedSchema = new Schema<TRaised>(
+const mediaSchema = new Schema<TMedia>(
   {
-    amount: {
-      type: Number,
+    name: {
+      type: String,
       required: true,
     },
-    type: {
+    link: {
+      type: String,
+      required: true,
+    },
+    iconImg: {
       type: String,
       required: true,
     },
@@ -23,4 +27,4 @@ const raisedSchema = new Schema<TRaised>(
   },
 );
 
-export const Investment = model<TRaised>('Invesment', raisedSchema);
+export const SocialMedia = model<TMedia>('SocialMedia', mediaSchema);

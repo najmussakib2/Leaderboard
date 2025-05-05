@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 import { Schema, model } from 'mongoose';
-import { TInvest } from '../Interfaces/invest.interface';
+import { TInvest } from '../Interfaces/schema.interface';
 
 const investSchema = new Schema<TInvest>(
   {
@@ -10,14 +10,13 @@ const investSchema = new Schema<TInvest>(
     },
     user: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
-    }
+    },
   },
   {
     timestamps: true,
   },
 );
-
 
 export const Investment = model<TInvest>('Invesment', investSchema);

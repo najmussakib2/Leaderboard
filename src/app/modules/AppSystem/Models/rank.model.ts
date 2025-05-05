@@ -1,0 +1,38 @@
+/* eslint-disable @typescript-eslint/no-this-alias */
+import { Schema, model } from 'mongoose';
+import { TRank } from '../Interfaces/schema.interface';
+
+const rankingSchema = new Schema<TRank>(
+  {
+    rank: {
+      type: Number,
+      required: true
+    },
+    
+    prevRank: {
+      type: Number,
+      required: true
+    },
+
+    totalInvest: {
+      type: Number,
+      required: true
+    },
+
+    totalRaised: {
+      type: Number,
+      required: true
+    },
+    
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+  },
+  {
+    timestamps: true,
+  },
+);
+
+export const Rank = model<TRank>('Rank', rankingSchema);

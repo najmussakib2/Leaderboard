@@ -47,6 +47,10 @@ const userSchema = new Schema<TUser, UserModel>(
       enum: ['investor', 'admin'],
       required: true,
     },
+    recommendedBy: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+    },
     status: {
       type: String,
       enum: UserStatus,

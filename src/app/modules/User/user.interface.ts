@@ -4,6 +4,7 @@ import { USER_ROLE } from './user.constant';
 
 export interface TUser {
   _id: Types.ObjectId;
+  recommendedBy: Types.ObjectId;
   name: string;
   id: string;
   email: string;

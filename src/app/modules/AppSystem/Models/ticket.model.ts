@@ -1,15 +1,11 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 import { Schema, model } from 'mongoose';
-import { TRaised } from '../Interfaces/schema.interface';
+import { TTicket } from '../Interfaces/schema.interface';
 
-const raisedSchema = new Schema<TRaised>(
+const ticketSchema = new Schema<TTicket>(
   {
-    amount: {
+    qty: {
       type: Number,
-      required: true,
-    },
-    type: {
-      type: String,
       required: true,
     },
     user: {
@@ -23,4 +19,4 @@ const raisedSchema = new Schema<TRaised>(
   },
 );
 
-export const Investment = model<TRaised>('Invesment', raisedSchema);
+export const Ticket = model<TTicket>('Ticket', ticketSchema);
