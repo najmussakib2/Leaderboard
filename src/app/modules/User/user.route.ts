@@ -37,4 +37,11 @@ router.get(
   UserControllers.getMe,
 );
 
+router.patch(
+  '/update-profileImg',
+  auth(),
+  upload.single('file'),
+  UserControllers.updateProfileImg,
+);
+
 export const UserRoutes = router;

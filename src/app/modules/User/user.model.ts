@@ -56,6 +56,9 @@ const userSchema = new Schema<TUser, UserModel>(
       enum: UserStatus,
       default: 'in-progress',
     },
+    views: {
+      type: Number,
+    },
     isDeleted: {
       type: Boolean,
       default: false,

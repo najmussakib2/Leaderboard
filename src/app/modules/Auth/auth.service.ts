@@ -7,11 +7,15 @@ import { sendEmail } from '../../utils/sendEmail';
 import { User } from '../User/user.model';
 import { TLoginUser } from './auth.interface';
 import { createToken, verifyToken } from './auth.utils';
+import { TUser } from '../User/user.interface';
+import cryptoToken from '../../utils/cryptoToken';
+import generateOTP from '../../utils/generateOTP';
+import { OTPmailBody } from '../../utils/emailTemplate';
+import { OTP } from '../AppSystem/Models/otp.model';
 
 const loginUser = async (payload: TLoginUser) => {
-
   // checking if the user is exist
-  const user = await User.findOne({email: payload.email});
+  const user = await User.findOne({ email: payload.email });
 
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'This user is not found !');
@@ -58,7 +62,54 @@ const loginUser = async (payload: TLoginUser) => {
 
   return {
     accessToken,
-    refreshToken
+    refreshToken,
+  };
+};
+
+const registerUser = async (payload: TUser) => {
+  // checking if the user is exist
+  const user = await User.findOne({ email: payload.email });
+
+  if (user) {
+    const isDeleted = user?.isDeleted;
+
+    if (isDeleted) {
+      throw new AppError(httpStatus.FORBIDDEN, 'This user is deleted !');
+    }
+
+    // checking if the user is blocked
+
+    const userStatus = user?.status;
+
+    if (userStatus === 'blocked') {
+      throw new AppError(httpStatus.FORBIDDEN, 'This user is blocked ! !');
+    }
+    throw new AppError(httpStatus.NOT_FOUND, 'user already exist !');
+  }
+
+  const otp = generateOTP();
+
+  const html = OTPmailBody(otp);
+
+  sendEmail(payload?.email, html);
+
+  const body = {
+    identifier: payload.email,
+    otp,
+    expiresAt: new Date(Date.now() + 120000),
+  };
+
+  const storeOtpTOServer = await OTP.create(body);
+
+  if (!storeOtpTOServer) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Failed to store OTP !');
+  }
+
+  const crypto = cryptoToken(10);
+  const token = jwt.sign(payload, crypto, { expiresIn: '10m' });
+
+  return {
+    token,
   };
 };
 
@@ -194,7 +245,7 @@ const forgetPassword = async (userId: string) => {
     '10m',
   );
 
-  const resetUILink = `${config.reset_pass_ui_link}?id=${user.id}&token=${resetToken} `;
+  const resetUILink = `${config.reset_pass_ui_link}?id=${user.id}&token=${resetToken}`;
 
   sendEmail(user.email, resetUILink);
 
@@ -261,4 +312,5 @@ export const AuthServices = {
   refreshToken,
   forgetPassword,
   resetPassword,
+  registerUser,
 };

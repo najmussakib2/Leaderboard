@@ -7,20 +7,18 @@ import { sendImageToCloudinary } from '../../utils/sendImageToCloudinary';
 import { createToken } from '../Auth/auth.utils';
 import { TUser } from './user.interface';
 import { User } from './user.model';
-
+import { Express } from 'express';
+import { JwtPayload } from 'jsonwebtoken';
 
 const createUserIntoDB = async (
   file: any,
   password: string,
   payload: TUser,
 ) => {
-
-
   //if password is not given , use default password
   payload.password = password || (config.default_password as string);
 
   try {
-
     if (file) {
       const imageName = `${payload?.name}-${payload.email}`;
       const path = file?.path;
@@ -55,7 +53,7 @@ const createUserIntoDB = async (
 
     return {
       accessToken,
-      refreshToken
+      refreshToken,
     };
   } catch (err: any) {
     throw new Error(err);
@@ -74,8 +72,33 @@ const changeStatus = async (id: string, payload: { status: string }) => {
   return result;
 };
 
+const updateProfileImgInDB = async (
+  file: Express.Multer.File | undefined,
+  user: JwtPayload,
+) => {
+  const { userId } = user;
+  let profileImg;
+
+  if (file) {
+    const imageName = `${user.userId}_${file.originalname}`;
+    const { path } = file;
+    const { secure_url: secureUrl } = await sendImageToCloudinary(
+      imageName,
+      path,
+    );
+    profileImg = secureUrl;
+  }
+  const result = await User.updateOne(
+    { id: userId },
+    { profileImg },
+    { new: true },
+  );
+  return result;
+};
+
 export const UserServices = {
   createUserIntoDB,
   getMe,
   changeStatus,
+  updateProfileImgInDB,
 };

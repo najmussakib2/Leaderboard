@@ -6,24 +6,27 @@ const rankingSchema = new Schema<TRank>(
   {
     rank: {
       type: Number,
+      required: true,
+    },
+
+    prevRank: {
+      type: [{
+        date: { type: Date, required: true },
+        number: { type: Number, required: true }
+      }],
       required: true
     },
     
-    prevRank: {
-      type: Number,
-      required: true
-    },
-
     totalInvest: {
       type: Number,
-      required: true
+      required: true,
     },
 
     totalRaised: {
       type: Number,
-      required: true
+      required: true,
     },
-    
+
     user: {
       type: Schema.Types.ObjectId,
       ref: 'User',

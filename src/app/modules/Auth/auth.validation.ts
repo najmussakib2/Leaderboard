@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import { z } from 'zod';
 
 const loginValidationSchema = z.object({
@@ -43,10 +44,33 @@ const resetPasswordValidationSchema = z.object({
   }),
 });
 
+const registerValidationSchema = z.object({
+  body: z.object({
+    name: z.string().min(1),
+    email: z.string().email(),
+    password: z.string().min(6),
+    country: z.string().min(1),
+    city: z.string().min(1),
+    gender: z.enum(['Male', 'Female']),
+    age: z.string().min(1),
+    profileImg: z.string().url().optional(),
+    role: z.enum(['investor', 'admin']),
+    recommendedBy: z
+      .string()
+      .refine((val) => Types.ObjectId.isValid(val), {
+        message: 'Invalid ObjectId',
+      })
+      .optional(),
+    views: z.number().optional(),
+    isDeleted: z.boolean().optional().default(false),
+  }),
+});
+
 export const AuthValidation = {
   loginValidationSchema,
   changePasswordValidationSchema,
   refreshTokenValidationSchema,
   forgetPasswordValidationSchema,
   resetPasswordValidationSchema,
+  registerValidationSchema
 };

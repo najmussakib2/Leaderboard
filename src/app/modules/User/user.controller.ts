@@ -53,8 +53,20 @@ const changeStatus = catchAsync(async (req, res) => {
     data: result,
   });
 });
+
+const updateProfileImg = catchAsync(async (req, res) => {
+  const result = await UserServices.updateProfileImgInDB(req.file, req.user);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Profile image is updated successfully',
+    data: result,
+  });
+});
+
 export const UserControllers = {
   createUser,
   getMe,
   changeStatus,
+  updateProfileImg
 };

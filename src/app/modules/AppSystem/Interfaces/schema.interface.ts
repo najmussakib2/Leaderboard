@@ -1,16 +1,16 @@
-import { Types } from "mongoose";
+import { Types } from 'mongoose';
 
 export interface TInvest {
   _id: Types.ObjectId;
   amount: number;
-  user: Types.ObjectId
+  user: Types.ObjectId;
 }
 
 export interface TRaised {
   _id: Types.ObjectId;
   amount: number;
   type: string;
-  user: Types.ObjectId
+  user: Types.ObjectId;
 }
 
 export interface TMedia {
@@ -18,20 +18,31 @@ export interface TMedia {
   name: string;
   link: string;
   iconImg: string;
-  user: Types.ObjectId
+  user: Types.ObjectId;
 }
 
 export interface TTicket {
   _id: Types.ObjectId;
   qty: number;
-  user: Types.ObjectId
+  user: Types.ObjectId;
 }
 
+interface PrevRankEntry {
+  date: Date;
+  number: number;
+}
 export interface TRank {
   _id: Types.ObjectId;
   rank: number;
-  prevRank: number;
+  prevRank: PrevRankEntry[];
   totalInvest: number;
   totalRaised: number;
-  user: Types.ObjectId
+  user: Types.ObjectId;
+}
+
+export interface TOTP {
+  _id: Types.ObjectId;
+  identifier: string;
+  otp: string;
+  expiresAt: Date;
 }

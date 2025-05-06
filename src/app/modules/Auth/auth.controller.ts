@@ -26,6 +26,20 @@ const loginUser = catchAsync(async (req, res) => {
   });
 });
 
+const registerUser = catchAsync(async (req, res) => {
+  const result = await AuthServices.registerUser(req.body);
+  const { token } = result;
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'OTP sended successfully!',
+    data: {
+      token,
+    },
+  });
+});
+
 const changePassword = catchAsync(async (req, res) => {
   const { ...passwordData } = req.body;
 
@@ -77,10 +91,30 @@ const resetPassword = catchAsync(async (req, res) => {
   });
 });
 
+const compareOTP = catchAsync(async (req, res) => {});
+
+const resendOTP = catchAsync(async (req, res) => {});
+
+const addFacebook = catchAsync(async (req, res) => {});
+
+const addLinkedin = catchAsync(async (req, res) => {});
+
+const addInstagram = catchAsync(async (req, res) => {});
+
+const addTwitter = catchAsync(async (req, res) => {});
+
 export const AuthControllers = {
+  registerUser,
   loginUser,
   changePassword,
   refreshToken,
   forgetPassword,
   resetPassword,
+
+  compareOTP,
+  resendOTP,
+  addFacebook,
+  addLinkedin,
+  addInstagram,
+  addTwitter,
 };

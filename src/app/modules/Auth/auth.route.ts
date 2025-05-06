@@ -12,6 +12,11 @@ router.post(
   validateRequest(AuthValidation.loginValidationSchema),
   AuthControllers.loginUser,
 );
+router.post(
+  '/register',
+  validateRequest(AuthValidation.registerValidationSchema),
+  AuthControllers.registerUser,
+);
 
 router.post(
   '/change-password',
@@ -39,6 +44,39 @@ router.post(
   '/reset-password',
   validateRequest(AuthValidation.forgetPasswordValidationSchema),
   AuthControllers.resetPassword,
+);
+
+router.post(
+  '/otp-compare',
+  validateRequest(AuthValidation.forgetPasswordValidationSchema),
+  AuthControllers.compareOTP,
+);
+
+router.post(
+  '/otp-resend/:email',
+  validateRequest(AuthValidation.forgetPasswordValidationSchema),
+  AuthControllers.resendOTP,
+);
+//social media add
+
+router.post(
+  '/add-facebook',
+  AuthControllers.addFacebook,
+);
+
+router.post(
+  '/add-linkedin',
+  AuthControllers.addLinkedin,
+);
+
+router.post(
+  '/add-instagram',
+  AuthControllers.addInstagram,
+);
+
+router.post(
+  '/add-twitter',
+  AuthControllers.addTwitter,
 );
 
 export const AuthRoutes = router;

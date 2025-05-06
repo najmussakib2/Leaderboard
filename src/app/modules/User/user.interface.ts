@@ -16,6 +16,7 @@ export interface TUser {
   passwordChangedAt?: Date;
   role: 'investor' | 'admin';
   status: 'in-progress' | 'blocked';
+  views: number;
   isDeleted: boolean;
   profileImg: string;
 
