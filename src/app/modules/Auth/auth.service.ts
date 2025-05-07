@@ -10,7 +10,7 @@ import { createToken, verifyToken } from './auth.utils';
 import { TUser } from '../User/user.interface';
 import cryptoToken from '../../utils/cryptoToken';
 import generateOTP from '../../utils/generateOTP';
-import { OTPmailBody } from '../../utils/emailTemplate';
+import { OTPmailBody, OTPmailSubject } from '../../utils/emailTemplate';
 import { OTP } from '../AppSystem/Models/otp.model';
 
 const loginUser = async (payload: TLoginUser) => {
@@ -90,11 +90,12 @@ const registerUser = async (payload: TUser) => {
   const otp = generateOTP();
 
   const html = OTPmailBody(otp);
+  const subject = OTPmailSubject;
 
-  sendEmail(payload?.email, html);
+  sendEmail(payload?.email, html, subject);
 
   const body = {
-    identifier: payload.email,
+    email: payload.email,
     otp,
     expiresAt: new Date(Date.now() + 120000),
   };
@@ -105,12 +106,73 @@ const registerUser = async (payload: TUser) => {
     throw new AppError(httpStatus.NOT_FOUND, 'Failed to store OTP !');
   }
 
-  const crypto = cryptoToken(10);
+  const crypto = config.create_user_token as string;
+  // const crypto = cryptoToken(10);
+
   const token = jwt.sign(payload, crypto, { expiresIn: '10m' });
 
   return {
     token,
   };
+};
+
+const compareOTP = async (otp: string, email: string) => {
+  if (!otp || !email) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Missing OTP code or user email!');
+  }
+  const isOtpExist = await OTP.findOne({ email });
+
+  if (!isOtpExist) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'OTP code Expired! Please try again.!',
+    );
+  }
+  if (isOtpExist.otp !== otp) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'Incorrect OTP. Please try again.',
+    );
+  }
+
+  return null;
+};
+
+const resendOTP = async (email: string) => {
+  if (!email) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Missing user email!');
+  }
+
+  const newOtp = generateOTP();
+
+  const html = OTPmailBody(newOtp);
+  const subject = OTPmailSubject;
+
+  const body = {
+    email: email,
+    otp: newOtp,
+    expiresAt: new Date(Date.now() + 120000),
+  };
+
+  const isOtpExist = await OTP.findOne({ email });
+
+  let storeOtpTOServer = null;
+
+  if (isOtpExist) {
+    storeOtpTOServer = await OTP.updateOne(
+      { email },
+      { otp: newOtp, expiresAt: new Date(Date.now() + 120000) },
+    );
+  } else {
+    storeOtpTOServer = await OTP.create(body);
+  }
+
+  if (!storeOtpTOServer) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Failed to store OTP !');
+  }
+  sendEmail(email, html, subject);
+
+  return null;
 };
 
 const changePassword = async (
@@ -213,12 +275,12 @@ const refreshToken = async (token: string) => {
   };
 };
 
-const forgetPassword = async (userId: string) => {
+const forgetPassword = async (email: string) => {
   // checking if the user is exist
-  const user = await User.isUserExistsByObjectId(userId);
+  const user = await User.findOne({ email });
 
   if (!user) {
-    throw new AppError(httpStatus.NOT_FOUND, 'This user is not found !');
+    throw new AppError(httpStatus.NOT_FOUND, 'user not found !');
   }
   // checking if the user is already deleted
   const isDeleted = user?.isDeleted;
@@ -234,22 +296,28 @@ const forgetPassword = async (userId: string) => {
     throw new AppError(httpStatus.FORBIDDEN, 'This user is blocked ! !');
   }
 
+  const otp = generateOTP();
+  const html = OTPmailBody(otp);
+  const subject = OTPmailSubject;
+
+  const body = {
+    email: user.email,
+    otp,
+    expiresAt: new Date(Date.now() + 120000),
+  };
+  const storeOtpTOServer = await OTP.create(body);
+  if (!storeOtpTOServer) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Failed to store OTP !');
+  }
+  sendEmail(user?.email, html, subject);
+
   const jwtPayload = {
     userId: user._id,
     role: user.role,
   };
-
-  const resetToken = createToken(
-    jwtPayload,
-    config.jwt_access_secret as string,
-    '10m',
-  );
-
-  const resetUILink = `${config.reset_pass_ui_link}?id=${user.id}&token=${resetToken}`;
-
-  sendEmail(user.email, resetUILink);
-
-  console.log(resetUILink);
+  const secret = cryptoToken(10);
+  const token = createToken(jwtPayload, secret as string, '2m');
+  return token;
 };
 
 const resetPassword = async (
@@ -257,10 +325,10 @@ const resetPassword = async (
   token: string,
 ) => {
   // checking if the user is exist
-  const user = await User.isUserExistsByObjectId(payload?.id);
+  const user = await User.findOne({ _id: payload?.id });
 
   if (!user) {
-    throw new AppError(httpStatus.NOT_FOUND, 'This user is not found !');
+    throw new AppError(httpStatus.NOT_FOUND, 'user not found !');
   }
   // checking if the user is already deleted
   const isDeleted = user?.isDeleted;
@@ -281,8 +349,6 @@ const resetPassword = async (
     config.jwt_access_secret as string,
   ) as JwtPayload;
 
-  //localhost:3000?id=A-0001&token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJBLTAwMDEiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MDI4NTA2MTcsImV4cCI6MTcwMjg1MTIxN30.-T90nRaz8-KouKki1DkCSMAbsHyb9yDi0djZU3D6QO4
-
   if (payload.id !== decoded.userId) {
     console.log(payload.id, decoded.userId);
     throw new AppError(httpStatus.FORBIDDEN, 'You are forbidden!');
@@ -296,12 +362,11 @@ const resetPassword = async (
 
   await User.findOneAndUpdate(
     {
-      id: decoded.userId,
+      _id: decoded.userId,
       role: decoded.role,
     },
     {
       password: newHashedPassword,
-      passwordChangedAt: new Date(),
     },
   );
 };
@@ -313,4 +378,6 @@ export const AuthServices = {
   forgetPassword,
   resetPassword,
   registerUser,
+  compareOTP,
+  resendOTP,
 };

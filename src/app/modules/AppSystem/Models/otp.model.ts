@@ -4,7 +4,7 @@ import { TOTP } from '../Interfaces/schema.interface';
 
 const otpSchema = new Schema<TOTP>(
   {
-    identifier: {
+    email: {
       type: String,
       required: true, // can be email or phone number
     },

@@ -42,7 +42,7 @@ export interface TRank {
 
 export interface TOTP {
   _id: Types.ObjectId;
-  identifier: string;
+  email: string;
   otp: string;
   expiresAt: Date;
 }

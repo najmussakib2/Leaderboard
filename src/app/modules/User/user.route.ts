@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import express, { NextFunction, Request, Response } from 'express';
+import express from 'express';
 import auth from '../../middlewares/auth';
 import validateRequest from '../../middlewares/validateRequest';
 import { upload } from '../../utils/sendImageToCloudinary';
@@ -9,16 +9,7 @@ import { UserValidation } from './user.validation';
 
 const router = express.Router();
 
-router.post(
-  '/register',
-  upload.single('file'),
-  (req: Request, res: Response, next: NextFunction) => {
-    req.body = JSON.parse(req.body.data);
-    next();
-  },
-  validateRequest(UserValidation.createUserValidationShema),
-  UserControllers.createUser,
-);
+router.post('/create-user', UserControllers.createUser);
 
 router.post(
   '/change-status/:id',
@@ -29,11 +20,7 @@ router.post(
 
 router.get(
   '/me',
-  auth(
-
-    USER_ROLE.admin,
-    USER_ROLE.investor,
-  ),
+  auth(USER_ROLE.admin, USER_ROLE.investor),
   UserControllers.getMe,
 );
 

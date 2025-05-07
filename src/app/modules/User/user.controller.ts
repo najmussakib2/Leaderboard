@@ -5,13 +5,9 @@ import sendResponse from '../../utils/sendResponse';
 import { UserServices } from './user.service';
 
 const createUser = catchAsync(async (req, res) => {
-  const { password, userData } = req.body;
+  const token = req.headers.authorization as string;
 
-  const result = await UserServices.createUserIntoDB(
-    req.file,
-    password,
-    userData,
-  );
+  const result = await UserServices.createUserIntoDB(token);
   const { refreshToken, accessToken } = result;
   res.cookie('refreshToken', refreshToken, {
     secure: config.NODE_ENV === 'production',
@@ -24,10 +20,9 @@ const createUser = catchAsync(async (req, res) => {
     statusCode: httpStatus.OK,
     success: true,
     message: 'User is logged in successfully!',
-    data: {accessToken}
+    data: { accessToken },
   });
 });
-
 
 const getMe = catchAsync(async (req, res) => {
   const { userId } = req.user;
@@ -68,5 +63,5 @@ export const UserControllers = {
   createUser,
   getMe,
   changeStatus,
-  updateProfileImg
+  updateProfileImg,
 };

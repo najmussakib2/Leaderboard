@@ -20,10 +20,7 @@ router.post(
 
 router.post(
   '/change-password',
-  auth(
-    USER_ROLE.admin,
-    USER_ROLE.investor,
-  ),
+  auth(USER_ROLE.admin, USER_ROLE.investor),
   validateRequest(AuthValidation.changePasswordValidationSchema),
   AuthControllers.changePassword,
 );
@@ -48,35 +45,19 @@ router.post(
 
 router.post(
   '/otp-compare',
-  validateRequest(AuthValidation.forgetPasswordValidationSchema),
+  validateRequest(AuthValidation.compareOTPValidationSchema),
   AuthControllers.compareOTP,
 );
 
-router.post(
-  '/otp-resend/:email',
-  validateRequest(AuthValidation.forgetPasswordValidationSchema),
-  AuthControllers.resendOTP,
-);
+router.post('/otp-resend/:email', AuthControllers.resendOTP);
 //social media add
 
-router.post(
-  '/add-facebook',
-  AuthControllers.addFacebook,
-);
+router.post('/add-facebook', AuthControllers.addFacebook);
 
-router.post(
-  '/add-linkedin',
-  AuthControllers.addLinkedin,
-);
+router.post('/add-linkedin', AuthControllers.addLinkedin);
 
-router.post(
-  '/add-instagram',
-  AuthControllers.addInstagram,
-);
+router.post('/add-instagram', AuthControllers.addInstagram);
 
-router.post(
-  '/add-twitter',
-  AuthControllers.addTwitter,
-);
+router.post('/add-twitter', AuthControllers.addTwitter);
 
 export const AuthRoutes = router;

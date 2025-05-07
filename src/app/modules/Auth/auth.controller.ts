@@ -65,13 +65,13 @@ const refreshToken = catchAsync(async (req, res) => {
 });
 
 const forgetPassword = catchAsync(async (req, res) => {
-  const userId = req.body.id;
-  const result = await AuthServices.forgetPassword(userId);
+  const email = req.body.email;
+  const result = await AuthServices.forgetPassword(email);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Reset link is generated successfully!',
-    data: result,
+    message: 'OTP sended successfully!',
+    data: { token: result },
   });
 });
 
@@ -91,9 +91,29 @@ const resetPassword = catchAsync(async (req, res) => {
   });
 });
 
-const compareOTP = catchAsync(async (req, res) => {});
+const compareOTP = catchAsync(async (req, res) => {
+  const { otp, email } = req.body;
+  const result = await AuthServices.compareOTP(otp, email);
 
-const resendOTP = catchAsync(async (req, res) => {});
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'OTP Matched successfully!',
+    data: result,
+  });
+});
+
+const resendOTP = catchAsync(async (req, res) => {
+  const { email } = req.params;
+  const result = await AuthServices.resendOTP(email);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'OTP re-sended successfully!',
+    data: result,
+  });
+});
 
 const addFacebook = catchAsync(async (req, res) => {});
 

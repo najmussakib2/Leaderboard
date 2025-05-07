@@ -5,30 +5,21 @@ import config from '../../config';
 import AppError from '../../errors/AppError';
 import { sendImageToCloudinary } from '../../utils/sendImageToCloudinary';
 import { createToken } from '../Auth/auth.utils';
-import { TUser } from './user.interface';
 import { User } from './user.model';
 import { Express } from 'express';
-import { JwtPayload } from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
+import { cleanObject } from './user.utils';
 
-const createUserIntoDB = async (
-  file: any,
-  password: string,
-  payload: TUser,
-) => {
-  //if password is not given , use default password
-  payload.password = password || (config.default_password as string);
+const createUserIntoDB = async (token: string) => {
+  const decoded = jwt.verify(
+    token,
+    config.create_user_token as string,
+  ) as JwtPayload;
+
+  const userData = cleanObject(decoded, ['iat', 'exp']);
 
   try {
-    if (file) {
-      const imageName = `${payload?.name}-${payload.email}`;
-      const path = file?.path;
-
-      //send image to cloudinary
-      const { secure_url } = await sendImageToCloudinary(imageName, path);
-      payload.profileImg = secure_url as string;
-    }
-
-    const user = await User.create(payload); // array
+    const user = await User.create(userData); // array
 
     if (!user) {
       throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create user');

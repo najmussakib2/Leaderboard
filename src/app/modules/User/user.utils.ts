@@ -1,6 +1,19 @@
 
 import { User } from './user.model';
 
+export function cleanObject<T extends object>(
+  obj: T,
+  excludeKeys: (keyof T)[] = []
+): Partial<T> {
+  return Object.fromEntries(
+    Object.entries(obj).filter(
+      ([key, value]) => value != null && !excludeKeys.includes(key as keyof T)
+    )
+  ) as Partial<T>;
+}
+
+
+
 // Admin ID
 export const findLastAdminId = async () => {
   const lastAdmin = await User.findOne(
