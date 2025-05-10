@@ -10,6 +10,7 @@ export interface TRaised {
   _id: Types.ObjectId;
   amount: number;
   type: string;
+  investor: Types.ObjectId;
   user: Types.ObjectId;
 }
 
@@ -35,6 +36,8 @@ export interface TRank {
   _id: Types.ObjectId;
   rank: number;
   prevRank: PrevRankEntry[];
+  raisedRank: number;
+  prevRaisedRank: PrevRankEntry[];
   totalInvest: number;
   totalRaised: number;
   user: Types.ObjectId;

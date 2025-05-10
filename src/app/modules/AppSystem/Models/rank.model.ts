@@ -16,6 +16,19 @@ const rankingSchema = new Schema<TRank>(
       }],
       required: true
     },
+
+    raisedRank: {
+      type: Number,
+      required: true,
+    },
+
+    prevRaisedRank: {
+      type: [{
+        date: { type: Date, required: true },
+        number: { type: Number, required: true }
+      }],
+      required: true
+    },
     
     totalInvest: {
       type: Number,

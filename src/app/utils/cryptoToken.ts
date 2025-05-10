@@ -5,3 +5,7 @@ const cryptoToken = (numb: number = 32) => {
 };
 
 export default cryptoToken;
+
+
+const secret = cryptoToken(10);
+console.log(secret);

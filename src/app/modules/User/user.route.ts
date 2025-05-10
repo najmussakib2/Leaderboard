@@ -13,7 +13,7 @@ router.post('/create-user', UserControllers.createUser);
 
 router.post(
   '/change-status/:id',
-  auth(),
+  auth(USER_ROLE.admin),
   validateRequest(UserValidation.changeStatusValidationSchema),
   UserControllers.changeStatus,
 );
@@ -24,11 +24,23 @@ router.get(
   UserControllers.getMe,
 );
 
+router.get(
+  '/:id',
+  auth(USER_ROLE.admin, USER_ROLE.investor),
+  UserControllers.viewDetailes,
+);
+
 router.patch(
   '/update-profileImg',
   auth(),
   upload.single('file'),
   UserControllers.updateProfileImg,
+);
+
+router.patch(
+  '/add-view',
+  auth(),
+  UserControllers.addView,
 );
 
 export const UserRoutes = router;

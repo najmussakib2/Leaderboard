@@ -9,6 +9,7 @@ const createUser = catchAsync(async (req, res) => {
 
   const result = await UserServices.createUserIntoDB(token);
   const { refreshToken, accessToken } = result;
+  
   res.cookie('refreshToken', refreshToken, {
     secure: config.NODE_ENV === 'production',
     httpOnly: true,
@@ -36,6 +37,18 @@ const getMe = catchAsync(async (req, res) => {
   });
 });
 
+const viewDetailes = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await UserServices.getMe(id);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'User is retrieved successfully',
+    data: result,
+  });
+});
+
 const changeStatus = catchAsync(async (req, res) => {
   const id = req.params.id;
 
@@ -45,6 +58,18 @@ const changeStatus = catchAsync(async (req, res) => {
     statusCode: httpStatus.OK,
     success: true,
     message: 'Status is updated successfully',
+    data: result,
+  });
+});
+
+const addView = catchAsync(async (req, res) => {
+  const {id} = req.params;
+  const result = await UserServices.addView(id);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'View added successfully',
     data: result,
   });
 });
@@ -64,4 +89,6 @@ export const UserControllers = {
   getMe,
   changeStatus,
   updateProfileImg,
+  viewDetailes,
+  addView
 };

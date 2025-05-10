@@ -8,7 +8,6 @@ import { User } from '../User/user.model';
 import { TLoginUser } from './auth.interface';
 import { createToken, verifyToken } from './auth.utils';
 import { TUser } from '../User/user.interface';
-import cryptoToken from '../../utils/cryptoToken';
 import generateOTP from '../../utils/generateOTP';
 import { OTPmailBody, OTPmailSubject } from '../../utils/emailTemplate';
 import { OTP } from '../AppSystem/Models/otp.model';
@@ -315,17 +314,23 @@ const forgetPassword = async (email: string) => {
     userId: user._id,
     role: user.role,
   };
-  const secret = cryptoToken(10);
+  const secret = config.reset_pass_token;
   const token = createToken(jwtPayload, secret as string, '2m');
   return token;
 };
 
 const resetPassword = async (
-  payload: { id: string; newPassword: string },
+  payload: { newPassword: string },
   token: string,
 ) => {
+
+  const decoded = jwt.verify(
+    token,
+    config.reset_pass_token as string,
+  ) as JwtPayload;
+
   // checking if the user is exist
-  const user = await User.findOne({ _id: payload?.id });
+  const user = await User.findOne({ _id: decoded.userId });
 
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'user not found !');
@@ -344,16 +349,6 @@ const resetPassword = async (
     throw new AppError(httpStatus.FORBIDDEN, 'This user is blocked ! !');
   }
 
-  const decoded = jwt.verify(
-    token,
-    config.jwt_access_secret as string,
-  ) as JwtPayload;
-
-  if (payload.id !== decoded.userId) {
-    console.log(payload.id, decoded.userId);
-    throw new AppError(httpStatus.FORBIDDEN, 'You are forbidden!');
-  }
-
   //hash new password
   const newHashedPassword = await bcrypt.hash(
     payload.newPassword,
@@ -369,7 +364,47 @@ const resetPassword = async (
       password: newHashedPassword,
     },
   );
+
+    //create token and sent to the  user
+
+    const jwtPayload = {
+      userId: user._id,
+      role: user.role,
+    };
+  
+    const accessToken = createToken(
+      jwtPayload,
+      config.jwt_access_secret as string,
+      config.jwt_access_expires_in as string,
+    );
+  
+    const refreshToken = createToken(
+      jwtPayload,
+      config.jwt_refresh_secret as string,
+      config.jwt_refresh_expires_in as string,
+    );
+  
+    return {
+      accessToken,
+      refreshToken,
+    };
 };
+
+const addFacebook = async (user: JwtPayload) => {
+  console.log(user);
+}
+
+const addLinkedin = async (user: JwtPayload) => {
+  console.log(user);
+}
+
+const addInstagram = async (user: JwtPayload) => {
+  console.log(user);
+}
+
+const addTwitter = async (user: JwtPayload) => {
+  console.log(user);
+}
 
 export const AuthServices = {
   loginUser,
@@ -380,4 +415,9 @@ export const AuthServices = {
   registerUser,
   compareOTP,
   resendOTP,
+
+  addFacebook,
+  addLinkedin,
+  addInstagram,
+  addTwitter,
 };

@@ -9,6 +9,9 @@ import { User } from './user.model';
 import { Express } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { cleanObject } from './user.utils';
+import { Investment } from '../AppSystem/Models/invest.model';
+import { Raised } from '../AppSystem/Models/raised.model';
+import { Rank } from '../AppSystem/Models/rank.model';
 
 const createUserIntoDB = async (token: string) => {
   const decoded = jwt.verify(
@@ -52,12 +55,64 @@ const createUserIntoDB = async (token: string) => {
 };
 
 const getMe = async (userId: string) => {
-  const result = await User.findOne({ _id: userId });
-  return result;
+  // 1. Get user
+  const user = await User.findById(userId).lean();
+  if (!user) throw new Error('User not found');
+
+  // 2. Get investments
+  const investments = await Investment.find(
+    { user: userId },
+    { amount: 1, createdAt: 1 },
+  )
+    .sort({ createdAt: -1 })
+    .lean();
+  const totalInvest = investments.reduce((sum, inv) => sum + inv.amount, 0);
+
+  // 3. Get raised bonuses
+  const raisedBonuses = await Raised.find(
+    { user: userId },
+    { amount: 1, createdAt: 1 },
+  )
+    .sort({ createdAt: -1 })
+    .lean();
+  const totalRaised = raisedBonuses.reduce((sum, r) => sum + r.amount, 0);
+
+  // 4. Get rank
+  const rank = await Rank.findOne({ user: userId }).lean();
+
+  const rankInfo = rank
+    ? {
+        investRank: rank.rank,
+        prevInvestRankHistory: rank.prevRank || [],
+        raisedRank: rank.raisedRank,
+        prevRaisedRankHistory: rank.prevRaisedRank || [],
+      }
+    : {
+        investRank: null,
+        prevInvestRankHistory: [],
+        raisedRank: null,
+        prevRaisedRankHistory: [],
+      };
+
+  return {
+    user,
+    investments,
+    totalInvest,
+    raisedBonuses,
+    totalRaised,
+    rankInfo,
+  };
 };
 
 const changeStatus = async (id: string, payload: { status: string }) => {
   const result = await User.findByIdAndUpdate(id, payload, {
+    new: true,
+  });
+  return result;
+};
+
+const addView = async (_id: string) => {
+  const result = await User.findByIdAndUpdate(_id, { $inc: { views: 1 } }, {
     new: true,
   });
   return result;
@@ -92,4 +147,5 @@ export const UserServices = {
   getMe,
   changeStatus,
   updateProfileImgInDB,
+  addView
 };

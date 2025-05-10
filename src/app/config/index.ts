@@ -20,6 +20,7 @@ export default {
   super_admin_password: process.env.SUPER_ADMIN_PASSWORD,
   origin_link: process.env.CORS_ORIGIN,
   create_user_token: process.env.CREAT_USER_TOKEN,
+  reset_pass_token: process.env.RESET_PASS_TOKEN,
   email: {
     from: process.env.EMAIL_FROM,
     user: process.env.EMAIL_USER,

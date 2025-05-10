@@ -11,6 +11,12 @@ const raisedSchema = new Schema<TRaised>(
     type: {
       type: String,
       required: true,
+      enum: ["bonus","raffles"]
+    },
+    investor: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
     },
     user: {
       type: Schema.Types.ObjectId,
@@ -23,4 +29,4 @@ const raisedSchema = new Schema<TRaised>(
   },
 );
 
-export const Investment = model<TRaised>('Invesment', raisedSchema);
+export const Raised = model<TRaised>('Raised', raisedSchema);

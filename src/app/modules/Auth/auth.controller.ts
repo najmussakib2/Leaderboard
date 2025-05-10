@@ -77,17 +77,26 @@ const forgetPassword = catchAsync(async (req, res) => {
 
 const resetPassword = catchAsync(async (req, res) => {
   const token = req.headers.authorization;
-
   if (!token) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Something went wrong !');
   }
-
   const result = await AuthServices.resetPassword(req.body, token);
+  const { refreshToken, accessToken } = result;
+
+  res.cookie('refreshToken', refreshToken, {
+    secure: config.NODE_ENV === 'production',
+    httpOnly: true,
+    sameSite: 'none',
+    maxAge: 1000 * 60 * 60 * 24 * 365,
+  });
+
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Password reset successfully!',
-    data: result,
+    message: 'Password reseted successfully!',
+    data: {
+      accessToken,
+    },
   });
 });
 
@@ -115,13 +124,49 @@ const resendOTP = catchAsync(async (req, res) => {
   });
 });
 
-const addFacebook = catchAsync(async (req, res) => {});
+const addFacebook = catchAsync(async (req, res) => {
+  const result = await AuthServices.addFacebook(req.user);
 
-const addLinkedin = catchAsync(async (req, res) => {});
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Facebook link added successfully!',
+    data: result,
+  });
+});
 
-const addInstagram = catchAsync(async (req, res) => {});
+const addLinkedin = catchAsync(async (req, res) => {
+  const result = await AuthServices.addLinkedin(req.user);
 
-const addTwitter = catchAsync(async (req, res) => {});
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Linkedin link added successfully!',
+    data: result,
+  });
+});
+
+const addInstagram = catchAsync(async (req, res) => {
+  const result = await AuthServices.addInstagram(req.user);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Instagram link added successfully!',
+    data: result,
+  });
+});
+
+const addTwitter = catchAsync(async (req, res) => {
+  const result = await AuthServices.addTwitter(req.user);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Twitter link added successfully!',
+    data: result,
+  });
+});
 
 export const AuthControllers = {
   registerUser,
