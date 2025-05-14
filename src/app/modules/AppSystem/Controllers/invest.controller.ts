@@ -17,6 +17,18 @@ const investMoney = catchAsync(async (req, res) => {
   });
 });
 
+const investRevenueByMonth = catchAsync(async (req, res) => {
+  const result = await InvestServices.investRevenueByMonth();
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Revenue retrived successfully!',
+    data: result,
+  });
+});
+
 export const InvestControllers = {
   investMoney,
+  investRevenueByMonth
 };

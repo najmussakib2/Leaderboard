@@ -4,7 +4,7 @@ import catchAsync from '../../../utils/catchAsync';
 import { RankServices } from '../Services/rank.service';
 
 const getUsersByRank = catchAsync(async (req, res) => {
-  const result = await RankServices.getUsersByRank();
+  const result = await RankServices.getUsersByRank(req.query);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -15,7 +15,7 @@ const getUsersByRank = catchAsync(async (req, res) => {
 });
 
 const getUsersByRaisedRank = catchAsync(async (req, res) => {
-  const result = await RankServices.getUsersByRaisedRank();
+  const result = await RankServices.getUsersByRaisedRank(req.query);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

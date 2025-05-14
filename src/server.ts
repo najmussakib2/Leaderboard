@@ -1,18 +1,25 @@
 import colors from 'colors';
-import { Server } from 'http';
 import mongoose from 'mongoose';
-import app from './app';
+import { server } from './app';
 import config from './app/config';
 import seedSuperUser from './app/DB';
-let server: Server;
+import { updateRanks } from './app/modules/AppSystem/Constants/updateRank';
 
 async function main() {
   try {
     await mongoose.connect(config.database_url as string);
 
     seedSuperUser();
-    server = app.listen(config.port, () => {
-      console.log(colors.green(`app is listening on port ${config.port}`));
+
+    setInterval(
+      async () => {
+        await updateRanks();
+      },
+      6 * 60 * 60 * 1000,
+    ); // 6 hours in milliseconds
+
+    server.listen(config.port, () => {
+      console.log(colors.green(`Socket Server is listening on port ${config.port}`));
     });
   } catch (err) {
     console.log(err);
@@ -22,7 +29,7 @@ async function main() {
 main();
 
 process.on('unhandledRejection', (err) => {
-  console.log(`😈 unahandledRejection is detected , shutting down ...`, err);
+  console.log(`😈 unhandledRejection detected, shutting down...`, err);
   if (server) {
     server.close(() => {
       process.exit(1);
@@ -31,7 +38,7 @@ process.on('unhandledRejection', (err) => {
   process.exit(1);
 });
 
-process.on('uncaughtException', () => {
-  console.log(`😈 uncaughtException is detected , shutting down ...`);
+process.on('uncaughtException', (err) => {
+  console.log(`😈 uncaughtException detected, shutting down...`, err);
   process.exit(1);
 });

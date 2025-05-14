@@ -11,7 +11,9 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import { cleanObject } from './user.utils';
 import { Investment } from '../AppSystem/Models/invest.model';
 import { Raised } from '../AppSystem/Models/raised.model';
-import { Rank } from '../AppSystem/Models/rank.model';
+import { generateCode } from '../../utils/cryptoToken';
+import { TUser } from './user.interface';
+import QueryBuilder from '../../builder/QueryBuilder';
 
 const createUserIntoDB = async (token: string) => {
   const decoded = jwt.verify(
@@ -20,6 +22,8 @@ const createUserIntoDB = async (token: string) => {
   ) as JwtPayload;
 
   const userData = cleanObject(decoded, ['iat', 'exp']);
+
+  userData.userCode = generateCode();
 
   try {
     const user = await User.create(userData); // array
@@ -78,7 +82,7 @@ const getMe = async (userId: string) => {
   const totalRaised = raisedBonuses.reduce((sum, r) => sum + r.amount, 0);
 
   // 4. Get rank
-  const rank = await Rank.findOne({ user: userId }).lean();
+  const rank = await User.findOne({ _id: userId }).lean();
 
   const rankInfo = rank
     ? {
@@ -112,9 +116,13 @@ const changeStatus = async (id: string, payload: { status: string }) => {
 };
 
 const addView = async (_id: string) => {
-  const result = await User.findByIdAndUpdate(_id, { $inc: { views: 1 } }, {
-    new: true,
-  });
+  const result = await User.findByIdAndUpdate(
+    _id,
+    { $inc: { views: 1 } },
+    {
+      new: true,
+    },
+  );
   return result;
 };
 
@@ -142,10 +150,99 @@ const updateProfileImgInDB = async (
   return result;
 };
 
+const withdrawMoney = async (userId: string, payload: { amount: number }) => {
+  const user = await User.findOne({ id: userId });
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found');
+  }
+
+  if ((user.withdraw ?? 0) < payload.amount) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Insufficient withdraw balance');
+  }
+
+  const result = await User.findOneAndUpdate(
+    { id: userId },
+    {
+      $inc: { withdraw: -payload.amount },
+    },
+    { new: true },
+  );
+
+  if (!result) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Failed to update user');
+  }
+
+  return result;
+};
+
+const updateUser = async (_id: string, payload: Partial<TUser>) => {
+  const result = await User.findOneAndUpdate({ _id }, payload, {
+    new: true,
+  });
+
+  if (!result) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Failed to update user');
+  }
+  return result;
+};
+
+const deleteUser = async (_id: string) => {
+  try {
+    if (!_id) throw new AppError(httpStatus.NOT_FOUND, 'user id not found!');
+    const result = await User.deleteOne({ _id });
+    if (!result)
+      throw new AppError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        'failed to delete User!',
+      );
+    return result;
+  } catch (err: any) {
+    throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, err.message);
+  }
+};
+
+const getAllUsersFromDB = async (query: Record<string, unknown>) => {
+  const resultQuery = new QueryBuilder(User.find({ isDeleted: false }), query)
+    .search(['name', 'gender', 'email', 'status'])
+    .filter()
+    .sort()
+    .fields()
+    .paginate()
+    .limit();
+  const result = await resultQuery.modelQuery;
+  const meta = await resultQuery.countTotal();
+  return { data: result, meta };
+};
+
+const getAllRefferdUsersFromDB = async (query: Record<string, unknown>) => {
+  const resultQuery = new QueryBuilder(
+    User.find({
+      isDeleted: false,
+      recommendedBy: { $exists: true, $ne: null },
+    }),
+    query,
+  )
+    .search(['name', 'gender', 'email', 'status'])
+    .filter()
+    .sort()
+    .fields()
+    .paginate()
+    .limit();
+  const result = await resultQuery.modelQuery;
+  const meta = await resultQuery.countTotal();
+  return { data: result, meta };
+};
+
 export const UserServices = {
   createUserIntoDB,
   getMe,
   changeStatus,
   updateProfileImgInDB,
-  addView
+  addView,
+  withdrawMoney,
+  updateUser,
+  deleteUser,
+  getAllUsersFromDB,
+  getAllRefferdUsersFromDB,
 };

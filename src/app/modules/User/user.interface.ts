@@ -1,10 +1,14 @@
 /* eslint-disable no-unused-vars */
-import { Model, Types } from 'mongoose';
+import { Document, Model, Types } from 'mongoose';
 import { USER_ROLE } from './user.constant';
 
-export interface TUser {
+interface PrevRankEntry {
+  date: Date;
+  number: number;
+}
+export interface TUser extends Document {
   _id: Types.ObjectId;
-  recommendedBy: Types.ObjectId;
+  recommendedBy?: Types.ObjectId;
   name: string;
   id: string;
   email: string;
@@ -16,10 +20,20 @@ export interface TUser {
   passwordChangedAt?: Date;
   role: 'investor' | 'admin';
   status: 'in-progress' | 'blocked';
-  views: number;
+  views?: number;
   isDeleted: boolean;
-  profileImg: string;
-
+  profileImg?: string;
+  //Rank
+  rank?: number;
+  prevRank?: PrevRankEntry[];
+  raisedRank?: number;
+  prevRaisedRank?: PrevRankEntry[];
+  totalInvest?: number;
+  totalRaised?: number;
+  totalRefferedAmount?: number;
+  totalAdminAmount?: number;
+  withdraw?: number;
+  userCode: number;
 }
 
 export interface UserModel extends Model<TUser> {

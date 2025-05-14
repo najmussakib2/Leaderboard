@@ -1,6 +1,5 @@
 import { User } from '../../User/user.model';
 import { Investment } from '../Models/invest.model';
-import { Rank } from '../Models/rank.model';
 
 const mostViewed = async () => {
   const user = await User.findOne()
@@ -39,10 +38,10 @@ const consecutivelyToper = async () => {
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-  const result = await Rank.aggregate([
+  const result = await User.aggregate([
     {
       $project: {
-        user: 1,
+        _id: 1,
         topRanks: {
           $filter: {
             input: '$prevRank',

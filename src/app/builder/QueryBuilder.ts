@@ -45,6 +45,14 @@ class QueryBuilder<T> {
 
     return this;
   }
+  
+
+  // limit query
+  limit() {
+    const limit = this.query.limit ? Number(this.query.limit) : Infinity;
+    this.modelQuery = this.modelQuery.limit(limit);
+    return this;
+  }
 
   paginate() {
     const page = Number(this?.query?.page) || 1;

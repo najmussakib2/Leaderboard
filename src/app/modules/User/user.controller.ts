@@ -84,11 +84,75 @@ const updateProfileImg = catchAsync(async (req, res) => {
   });
 });
 
+const withdrawMoney = catchAsync(async (req, res) => {
+  const {id} = req.params
+  const result = await UserServices.withdrawMoney(id, req.body);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'raised money withdrew successfull!',
+    data: result,
+  });
+});
+
+const updateUser = catchAsync(async (req, res) => {
+  const id = req.params.id;
+
+  const result = await UserServices.updateUser(id, req.body);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'User is updated successfully',
+    data: result,
+  });
+});
+
+const deleteUser = catchAsync(async (req, res) => {
+  const id = req.params.id;
+
+  const result = await UserServices.deleteUser(id);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'User is deleted successfully',
+    data: result,
+  });
+});
+
+const getAllUsers = catchAsync(async (req, res) => {
+  const result = await UserServices.getAllUsersFromDB(req.query);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'users are retrieved successfully',
+    meta: result.meta,
+    data: result.data,
+  });
+});
+
+const getAllRefferdUsers = catchAsync(async (req, res) => {
+  const result = await UserServices.getAllRefferdUsersFromDB(req.query);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'users are retrieved successfully',
+    meta: result.meta,
+    data: result.data,
+  });
+});
+
 export const UserControllers = {
   createUser,
   getMe,
   changeStatus,
   updateProfileImg,
   viewDetailes,
-  addView
+  addView,
+  withdrawMoney,
+  updateUser,
+  deleteUser,
+  getAllUsers,
+  getAllRefferdUsers
 };

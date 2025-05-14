@@ -19,9 +19,8 @@ const admin = {
 };
 
 const seedSuperUser = async () => {
-
   const isInvestorExist = await User.findOne({ role: USER_ROLE.investor });
-  
+
   if (!isInvestorExist) {
     await User.create(investor);
   }

@@ -7,9 +7,14 @@ const router = express.Router();
 
 router.post(
   '/',
-  auth(USER_ROLE.investor),
-  // validateRequest(AuthValidation.loginValidationSchema),
+  auth(USER_ROLE.investor, USER_ROLE.admin),
   InvestControllers.investMoney,
+);
+
+router.get(
+  '/revenue',
+  auth(USER_ROLE.admin),
+  InvestControllers.investRevenueByMonth,
 );
 
 export const InvestRoutes = router;

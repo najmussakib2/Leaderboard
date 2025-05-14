@@ -3,6 +3,8 @@ import { Types } from 'mongoose';
 export interface TInvest {
   _id: Types.ObjectId;
   amount: number;
+  refferedAmount?: number;
+  adminAmount: number;
   user: Types.ObjectId;
 }
 
@@ -28,20 +30,6 @@ export interface TTicket {
   user: Types.ObjectId;
 }
 
-interface PrevRankEntry {
-  date: Date;
-  number: number;
-}
-export interface TRank {
-  _id: Types.ObjectId;
-  rank: number;
-  prevRank: PrevRankEntry[];
-  raisedRank: number;
-  prevRaisedRank: PrevRankEntry[];
-  totalInvest: number;
-  totalRaised: number;
-  user: Types.ObjectId;
-}
 
 export interface TOTP {
   _id: Types.ObjectId;

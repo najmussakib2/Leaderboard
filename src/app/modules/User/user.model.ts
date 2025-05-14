@@ -5,6 +5,7 @@ import config from '../../config';
 import { UserStatus } from './user.constant';
 import { TUser, UserModel } from './user.interface';
 
+
 const userSchema = new Schema<TUser, UserModel>(
   {
     name: {
@@ -62,6 +63,57 @@ const userSchema = new Schema<TUser, UserModel>(
     isDeleted: {
       type: Boolean,
       default: false,
+    },
+    //Rank
+     rank: {
+      type: Number,
+      default: 0
+    },
+
+    prevRank: {
+      type: [{
+        date: { type: Date, required: true },
+        number: { type: Number, required: true }
+      }],
+      default: []
+    },
+
+    raisedRank: {
+      type: Number,
+      default: 0
+    },
+
+    prevRaisedRank: {
+      type: [{
+        date: { type: Date, required: true },
+        number: { type: Number, required: true }
+      }],
+      default: []
+    },
+    
+    totalInvest: {
+      type: Number,
+      default: 0
+    },
+
+    totalRaised: {
+      type: Number,
+      default: 0
+    },
+    totalRefferedAmount: {
+      type: Number,
+    },
+    totalAdminAmount: {
+      type: Number,
+    },
+    withdraw: {
+      type: Number,
+      default: 0
+    },
+
+    userCode: {
+      type: Number,
+      default: 0
     },
   },
   {

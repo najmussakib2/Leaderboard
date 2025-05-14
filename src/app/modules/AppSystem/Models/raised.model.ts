@@ -16,7 +16,6 @@ const raisedSchema = new Schema<TRaised>(
     investor: {
       type: Schema.Types.ObjectId,
       ref: 'User',
-      required: true,
     },
     user: {
       type: Schema.Types.ObjectId,

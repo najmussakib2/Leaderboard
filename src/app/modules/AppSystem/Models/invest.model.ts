@@ -8,6 +8,13 @@ const investSchema = new Schema<TInvest>(
       type: Number,
       required: true,
     },
+    refferedAmount: {
+      type: Number,
+    },
+    adminAmount: {
+      type: Number,
+      required: true,
+    },
     user: {
       type: Schema.Types.ObjectId,
       ref: 'User',

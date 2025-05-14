@@ -25,6 +25,20 @@ router.get(
 );
 
 router.get(
+  '/',
+  auth(USER_ROLE.admin),
+  UserControllers.getAllUsers,
+);
+
+router.get(
+  '/referance',
+  auth(USER_ROLE.admin),
+  UserControllers.getAllRefferdUsers,
+);
+
+//all active users route neaded
+
+router.get(
   '/:id',
   auth(USER_ROLE.admin, USER_ROLE.investor),
   UserControllers.viewDetailes,
@@ -41,6 +55,24 @@ router.patch(
   '/add-view',
   auth(),
   UserControllers.addView,
+);
+
+router.patch(
+  '/withdraw/:id',
+  auth(),
+  UserControllers.withdrawMoney,
+);
+
+router.delete(
+  '/:id',
+auth(USER_ROLE.admin, USER_ROLE.investor),
+  UserControllers.deleteUser,
+);
+
+router.patch(
+  '/:id',
+auth(USER_ROLE.admin, USER_ROLE.investor),
+  UserControllers.updateUser,
 );
 
 export const UserRoutes = router;
