@@ -6,6 +6,10 @@ const investor = {
   email: 'investor@gmail.com',
   password: 12345,
   role: USER_ROLE.investor,
+  country: "Bangladesh",
+  city: "Dhaka",
+  age: "32",
+  gender: "Male",
   status: 'in-progress',
   isDeleted: false,
 };
@@ -15,6 +19,10 @@ const admin = {
   password: 12345,
   role: USER_ROLE.admin,
   status: 'in-progress',
+  country: "Bangladesh",
+  city: "Dhaka",
+  age: "32",
+  gender: "Male",
   isDeleted: false,
 };
 

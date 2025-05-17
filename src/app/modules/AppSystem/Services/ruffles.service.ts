@@ -173,7 +173,7 @@ const raiseTopper = async (userId: string, payload: { number: number }) => {
   }
   const result1 = await Raised.create({
     amount: payload.number,
-    type: 'raffles',
+    type: 'winner',
     user: userId,
   });
   if (!result1) {

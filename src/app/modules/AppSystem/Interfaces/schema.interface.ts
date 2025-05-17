@@ -1,4 +1,5 @@
 import { Types } from 'mongoose';
+import { ParsedQs } from 'qs';
 
 export interface TInvest {
   _id: Types.ObjectId;
@@ -36,4 +37,9 @@ export interface TOTP {
   email: string;
   otp: string;
   expiresAt: Date;
+}
+
+
+export interface paymentSuccessQuery extends ParsedQs {
+  session_id?: string;
 }

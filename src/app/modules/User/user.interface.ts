@@ -33,6 +33,8 @@ export interface TUser extends Document {
   totalRefferedAmount?: number;
   totalAdminAmount?: number;
   withdraw?: number;
+  stripeCustomerId?: string;
+  hasPaymentDetails?: boolean;
   userCode: number;
 }
 

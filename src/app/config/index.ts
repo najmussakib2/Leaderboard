@@ -19,8 +19,10 @@ export default {
   cloudinary_api_secret: process.env.CLOUDINARY_API_SECRET,
   super_admin_password: process.env.SUPER_ADMIN_PASSWORD,
   origin_link: process.env.CORS_ORIGIN,
+  base_url: process.env.BASE_URL,
   create_user_token: process.env.CREAT_USER_TOKEN,
   reset_pass_token: process.env.RESET_PASS_TOKEN,
+  stripe_secret_key: process.env.STRIPE_SECRET_KEY,
   email: {
     from: process.env.EMAIL_FROM,
     user: process.env.EMAIL_USER,

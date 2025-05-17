@@ -5,7 +5,6 @@ import config from '../../config';
 import { UserStatus } from './user.constant';
 import { TUser, UserModel } from './user.interface';
 
-
 const userSchema = new Schema<TUser, UserModel>(
   {
     name: {
@@ -65,40 +64,44 @@ const userSchema = new Schema<TUser, UserModel>(
       default: false,
     },
     //Rank
-     rank: {
+    rank: {
       type: Number,
-      default: 0
+      default: 0,
     },
 
     prevRank: {
-      type: [{
-        date: { type: Date, required: true },
-        number: { type: Number, required: true }
-      }],
-      default: []
+      type: [
+        {
+          date: { type: Date, required: true },
+          number: { type: Number, required: true },
+        },
+      ],
+      default: [],
     },
 
     raisedRank: {
       type: Number,
-      default: 0
+      default: 0,
     },
 
     prevRaisedRank: {
-      type: [{
-        date: { type: Date, required: true },
-        number: { type: Number, required: true }
-      }],
-      default: []
+      type: [
+        {
+          date: { type: Date, required: true },
+          number: { type: Number, required: true },
+        },
+      ],
+      default: [],
     },
-    
+
     totalInvest: {
       type: Number,
-      default: 0
+      default: 0,
     },
 
     totalRaised: {
       type: Number,
-      default: 0
+      default: 0,
     },
     totalRefferedAmount: {
       type: Number,
@@ -108,12 +111,12 @@ const userSchema = new Schema<TUser, UserModel>(
     },
     withdraw: {
       type: Number,
-      default: 0
+      default: 0,
     },
-
+    stripeCustomerId: { type: String },
     userCode: {
       type: Number,
-      default: 0
+      default: 0,
     },
   },
   {

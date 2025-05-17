@@ -1,20 +1,21 @@
 import httpStatus from 'http-status';
 import { User } from '../../User/user.model';
 import { Investment } from '../Models/invest.model';
-import mongoose, { UpdateQuery } from 'mongoose';
+import mongoose, { Types, UpdateQuery } from 'mongoose';
 import AppError from '../../../errors/AppError';
 import { Raised } from '../Models/raised.model';
 
-const investMoney = async (userId: string, amount: number) => {
-  if (amount <= 0) throw new AppError(httpStatus.BAD_REQUEST, 'Invalid amount');
+export const investMoney = async (userId: string, amount: number) => {
+  if (!amount || amount <= 0)
+    throw new AppError(httpStatus.BAD_REQUEST, 'Invalid amount');
+  if (!userId) throw new AppError(httpStatus.BAD_REQUEST, 'User Id not Found!');
 
   const session = await mongoose.startSession();
-
   try {
     session.startTransaction();
 
     const user = await User.findById(userId).session(session);
-    if (!user) throw new AppError(httpStatus.NOT_FOUND, 'User not found');
+    if (!user) throw new AppError(httpStatus.NOT_FOUND, 'User not found!');
 
     const bonus = amount * 0.1;
     const adminAmount = amount - bonus;
@@ -34,17 +35,16 @@ const investMoney = async (userId: string, amount: number) => {
     const investmentData: {
       user: string;
       amount: number;
-      adminAmount: number;
+      adminAmount?: number;
       refferedAmount?: number;
     } = {
       user: userId,
       amount,
-      adminAmount,
     };
 
     if (user.recommendedBy) {
       investmentData.refferedAmount = bonus;
-
+      investmentData.adminAmount = adminAmount;
       await Raised.create(
         [
           {
@@ -90,6 +90,8 @@ const investMoney = async (userId: string, amount: number) => {
       await inviter.save({ session });
     }
 
+    investmentData.adminAmount = amount;
+
     await Investment.create([investmentData], { session });
     await User.findByIdAndUpdate(userId, updates, { session });
 
@@ -130,6 +132,53 @@ const investMoney = async (userId: string, amount: number) => {
   } finally {
     session.endSession();
   }
+};
+
+export const raisedMoney = async (userId: string, amount: number) => {
+  if (!userId || isNaN(amount)) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Invalid session metadata');
+  }
+
+  // 3. Create a new Raised record
+  const result = await Raised.create({
+    user: userId,
+    type: 'winner',
+    amount,
+  });
+
+  // 4. Calculate user's total raised
+  const totalRaised = await Raised.aggregate([
+    { $match: { user: new Types.ObjectId(userId) } },
+    { $group: { _id: null, total: { $sum: '$amount' } } },
+  ]).then((res) => res[0]?.total || 0);
+
+  // 5. Determine new raised rank
+  const newRaisedRank = await User.countDocuments({
+    totalRaised: { $gt: totalRaised },
+  }).then((count) => count + 1); // +1 because rank starts at 1
+
+  // 6. Fetch and update user
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found');
+  }
+
+  // Update rank history if changed
+  if (user.raisedRank !== newRaisedRank) {
+    user.prevRaisedRank?.push({
+      date: new Date(),
+      number: user.raisedRank ?? 0,
+    });
+    user.raisedRank = newRaisedRank;
+  }
+
+  // Update user totals
+  user.totalRaised = totalRaised;
+  user.withdraw = (user.withdraw || 0) + amount;
+
+  await user.save();
+
+  return result;
 };
 
 const investRevenueByMonth = async () => {

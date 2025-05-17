@@ -11,7 +11,7 @@ const raisedSchema = new Schema<TRaised>(
     type: {
       type: String,
       required: true,
-      enum: ["bonus","raffles"]
+      enum: ["bonus", "winner"]
     },
     investor: {
       type: Schema.Types.ObjectId,

@@ -24,8 +24,6 @@ const auth = (...requiredRoles: TUserRole[]) => {
 
     const { role, userId, iat } = decoded;
 
-    console.log('27=> ', decoded);
-
     // checking if the user is exist
     const user = await User.findById(userId);
 
@@ -70,4 +68,3 @@ const auth = (...requiredRoles: TUserRole[]) => {
 };
 
 export default auth;
-

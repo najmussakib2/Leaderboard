@@ -8,6 +8,10 @@ const router = express.Router();
 router.post(
   '/',
   auth(USER_ROLE.investor, USER_ROLE.admin),
+  (req, res, next) => {
+    console.log('from 11))>> ', req.user);
+    next();
+  },
   InvestControllers.investMoney,
 );
 

@@ -34,6 +34,7 @@ const createUserIntoDB = async (token: string) => {
 
     const jwtPayload = {
       userId: user.id,
+      email: user.email,
       role: user.role,
     };
 
