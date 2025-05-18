@@ -118,6 +118,11 @@ const userSchema = new Schema<TUser, UserModel>(
       type: Number,
       default: 0,
     },
+  //social media
+    facebook:{ type: String },
+    linkedin:{ type: String },
+    instagram:{ type: String },
+    twitter:{ type: String },
   },
   {
     timestamps: true,

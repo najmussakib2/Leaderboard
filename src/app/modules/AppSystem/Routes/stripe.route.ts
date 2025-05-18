@@ -12,14 +12,23 @@ router.post(
 );
 
 router.post(
+  '/withdraw',
+  auth(USER_ROLE.admin, USER_ROLE.investor),
+  StripController.withdrawToBank,
+);
+
+router.post(
   '/chekout-winner',
   auth(USER_ROLE.admin),
   StripController.checkoutWinnerPayment,
 );
 
-router.get(
-  '/success',
-  StripController.onSucccess,
+router.get('/success', StripController.onSucccess);
+
+router.post(
+  '/join-account',
+  auth(USER_ROLE.admin, USER_ROLE.investor),
+  StripController.createConnectedStripeAccount,
 );
 
 export const StripeRoutes = router;

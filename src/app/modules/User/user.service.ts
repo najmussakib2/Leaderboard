@@ -151,32 +151,6 @@ const updateProfileImgInDB = async (
   return result;
 };
 
-const withdrawMoney = async (userId: string, payload: { amount: number }) => {
-  const user = await User.findOne({ id: userId });
-
-  if (!user) {
-    throw new AppError(httpStatus.NOT_FOUND, 'User not found');
-  }
-
-  if ((user.withdraw ?? 0) < payload.amount) {
-    throw new AppError(httpStatus.BAD_REQUEST, 'Insufficient withdraw balance');
-  }
-
-  const result = await User.findOneAndUpdate(
-    { id: userId },
-    {
-      $inc: { withdraw: -payload.amount },
-    },
-    { new: true },
-  );
-
-  if (!result) {
-    throw new AppError(httpStatus.BAD_REQUEST, 'Failed to update user');
-  }
-
-  return result;
-};
-
 const updateUser = async (_id: string, payload: Partial<TUser>) => {
   const result = await User.findOneAndUpdate({ _id }, payload, {
     new: true,
@@ -241,7 +215,6 @@ export const UserServices = {
   changeStatus,
   updateProfileImgInDB,
   addView,
-  withdrawMoney,
   updateUser,
   deleteUser,
   getAllUsersFromDB,

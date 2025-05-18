@@ -122,49 +122,6 @@ const resendOTP = catchAsync(async (req, res) => {
   });
 });
 
-const addFacebook = catchAsync(async (req, res) => {
-  const result = await AuthServices.addFacebook(req.user);
-
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'Facebook link added successfully!',
-    data: result,
-  });
-});
-
-const addLinkedin = catchAsync(async (req, res) => {
-  const result = await AuthServices.addLinkedin(req.user);
-
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'Linkedin link added successfully!',
-    data: result,
-  });
-});
-
-const addInstagram = catchAsync(async (req, res) => {
-  const result = await AuthServices.addInstagram(req.user);
-
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'Instagram link added successfully!',
-    data: result,
-  });
-});
-
-const addTwitter = catchAsync(async (req, res) => {
-  const result = await AuthServices.addTwitter(req.user);
-
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'Twitter link added successfully!',
-    data: result,
-  });
-});
 
 export const AuthControllers = {
   registerUser,
@@ -176,8 +133,4 @@ export const AuthControllers = {
 
   compareOTP,
   resendOTP,
-  addFacebook,
-  addLinkedin,
-  addInstagram,
-  addTwitter,
 };

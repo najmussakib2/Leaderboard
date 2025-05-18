@@ -84,16 +84,6 @@ const updateProfileImg = catchAsync(async (req, res) => {
   });
 });
 
-const withdrawMoney = catchAsync(async (req, res) => {
-  const {id} = req.params
-  const result = await UserServices.withdrawMoney(id, req.body);
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'raised money withdrew successfull!',
-    data: result,
-  });
-});
 
 const updateUser = catchAsync(async (req, res) => {
   const id = req.params.id;
@@ -150,7 +140,6 @@ export const UserControllers = {
   updateProfileImg,
   viewDetailes,
   addView,
-  withdrawMoney,
   updateUser,
   deleteUser,
   getAllUsers,

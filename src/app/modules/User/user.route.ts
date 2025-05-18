@@ -57,12 +57,6 @@ router.patch(
   UserControllers.addView,
 );
 
-router.patch(
-  '/withdraw/:id',
-  auth(),
-  UserControllers.withdrawMoney,
-);
-
 router.delete(
   '/:id',
 auth(USER_ROLE.admin, USER_ROLE.investor),

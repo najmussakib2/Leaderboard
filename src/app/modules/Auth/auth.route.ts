@@ -37,10 +37,7 @@ router.post(
   AuthControllers.forgetPassword,
 );
 
-router.post(
-  '/reset-password',
-  AuthControllers.resetPassword,
-);
+router.post('/reset-password', AuthControllers.resetPassword);
 
 router.post(
   '/otp-compare',
@@ -49,14 +46,5 @@ router.post(
 );
 
 router.post('/otp-resend/:email', AuthControllers.resendOTP);
-//social media add
-
-router.post('/add-facebook', AuthControllers.addFacebook);
-
-router.post('/add-linkedin', AuthControllers.addLinkedin);
-
-router.post('/add-instagram', AuthControllers.addInstagram);
-
-router.post('/add-twitter', AuthControllers.addTwitter);
 
 export const AuthRoutes = router;

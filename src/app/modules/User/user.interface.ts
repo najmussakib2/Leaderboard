@@ -36,6 +36,10 @@ export interface TUser extends Document {
   stripeCustomerId?: string;
   hasPaymentDetails?: boolean;
   userCode: number;
+  facebook?: string;
+  linkedin?: string;
+  instagram?: string;
+  twitter?: string;
 }
 
 export interface UserModel extends Model<TUser> {
