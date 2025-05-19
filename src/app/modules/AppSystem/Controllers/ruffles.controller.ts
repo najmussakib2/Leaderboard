@@ -74,17 +74,6 @@ const getMaxTicketHolder = catchAsync(async (req, res) => {
   });
 });
 
-const raiseTopper = catchAsync(async (req, res) => {
-  const {id} = req.params
-  const result = await TicketServices.raiseTopper(id, req.body);
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'Ruffle Bonus added successfully!',
-    data: result,
-  });
-});
-
 const deleteRuffles = catchAsync(async (req, res) => {
   const {id} = req.params
   const result = await TicketServices.deleteRuffles(id);
@@ -103,6 +92,5 @@ export const TicketControllers = {
   getMyTickets,
   getTicketDetailes,
   getMaxTicketHolder,
-  raiseTopper,
   deleteRuffles
 };

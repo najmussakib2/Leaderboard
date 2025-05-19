@@ -1,10 +1,10 @@
 import httpStatus from 'http-status';
 import sendResponse from '../../../utils/sendResponse';
 import catchAsync from '../../../utils/catchAsync';
-import { FAQTQServices } from '../Services/FAQTQ.service';
+import { FAQTCServices } from '../Services/FAQTC.service';
 
 const createFAQ = catchAsync(async (req, res) => {
-  const result = await FAQTQServices.createFAQ(req.body);
+  const result = await FAQTCServices.createFAQ(req.body);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -14,8 +14,8 @@ const createFAQ = catchAsync(async (req, res) => {
   });
 });
 
-const createTAQ = catchAsync(async (req, res) => {
-  const result = await FAQTQServices.createTAQ(req.body);
+const createTAC = catchAsync(async (req, res) => {
+  const result = await FAQTCServices.createTAC(req.body);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -26,7 +26,7 @@ const createTAQ = catchAsync(async (req, res) => {
 });
 
 const reportProblem = catchAsync(async (req, res) => {
-  const result = await FAQTQServices.reportProblem(req.user.userId, req.body);
+  const result = await FAQTCServices.reportProblem(req.user.userId, req.body);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -37,7 +37,7 @@ const reportProblem = catchAsync(async (req, res) => {
 });
 
 const getReports = catchAsync(async (req, res) => {
-  const result = await FAQTQServices.getReports();
+  const result = await FAQTCServices.getReports();
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -46,8 +46,8 @@ const getReports = catchAsync(async (req, res) => {
     data: result,
   });
 });
-const getTAQ = catchAsync(async (req, res) => {
-  const result = await FAQTQServices.getTAQ();
+const getTAC = catchAsync(async (req, res) => {
+  const result = await FAQTCServices.getTAC();
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -58,7 +58,7 @@ const getTAQ = catchAsync(async (req, res) => {
 });
 
 const getFAQ = catchAsync(async (req, res) => {
-  const result = await FAQTQServices.getFAQ();
+  const result = await FAQTCServices.getFAQ();
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -69,7 +69,7 @@ const getFAQ = catchAsync(async (req, res) => {
 });
 
 const updateReport = catchAsync(async (req, res) => {
-  const result = await FAQTQServices.updateReport(req.params.id, req.body);
+  const result = await FAQTCServices.updateReport(req.params.id, req.body);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -80,7 +80,7 @@ const updateReport = catchAsync(async (req, res) => {
 });
 
 const updateFAQ = catchAsync(async (req, res) => {
-  const result = await FAQTQServices.updateFAQ(req.params.id, req.body);
+  const result = await FAQTCServices.updateFAQ(req.params.id, req.body);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -90,8 +90,8 @@ const updateFAQ = catchAsync(async (req, res) => {
   });
 });
 
-const updateTAQ = catchAsync(async (req, res) => {
-  const result = await FAQTQServices.updateTAQ(req.params.id, req.body);
+const updateTAC = catchAsync(async (req, res) => {
+  const result = await FAQTCServices.updateTAC(req.params.id, req.body);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -101,8 +101,8 @@ const updateTAQ = catchAsync(async (req, res) => {
   });
 });
 
-const deleteTAQ = catchAsync(async (req, res) => {
-  const result = await FAQTQServices.deleteTAQ(req.params.id);
+const deleteTAC = catchAsync(async (req, res) => {
+  const result = await FAQTCServices.deleteTAC(req.params.id);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -113,7 +113,7 @@ const deleteTAQ = catchAsync(async (req, res) => {
 });
 
 const deleteFAQ = catchAsync(async (req, res) => {
-  const result = await FAQTQServices.deleteFAQ(req.params.id);
+  const result = await FAQTCServices.deleteFAQ(req.params.id);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -124,7 +124,7 @@ const deleteFAQ = catchAsync(async (req, res) => {
 });
 
 const deleteReport = catchAsync(async (req, res) => {
-  const result = await FAQTQServices.deleteReport(req.params.id);
+  const result = await FAQTCServices.deleteReport(req.params.id);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -134,14 +134,14 @@ const deleteReport = catchAsync(async (req, res) => {
   });
 });
 
-export const FAQTQControllers = {
+export const FAQTCControllers = {
   createFAQ,
-  createTAQ,
-  getTAQ,
+  createTAC,
+  getTAC,
   getFAQ,
   updateFAQ,
-  updateTAQ,
-  deleteTAQ,
+  updateTAC,
+  deleteTAC,
   deleteFAQ,
   reportProblem,
   getReports,

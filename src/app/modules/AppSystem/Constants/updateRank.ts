@@ -1,11 +1,14 @@
-import mongoose from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import { Investment } from '../Models/invest.model';
 import { Raised } from '../Models/raised.model';
 import { User } from '../../User/user.model';
+import AppError from '../../../errors/AppError';
+import httpStatus from 'http-status';
+import { Notification } from '../Models/notification.model';
 
 const updateRanks = async () => {
   const dateTime = new Date();
-    console.log("Updated At: ",dateTime);
+  console.log('Updated At: ', dateTime);
   const session = await mongoose.startSession();
   try {
     session.startTransaction();
@@ -59,4 +62,19 @@ const updateRanks = async () => {
   }
 };
 
-export { updateRanks };
+const sendNotification = async (payload: {
+  title: string;
+  subTitle: string;
+  user?: string | Types.ObjectId;
+  type: string;
+}) => {
+  if (!payload) {
+    throw new AppError(httpStatus.NOT_FOUND, 'please provide the user id!');
+  }
+  const result = await Notification.create(payload)
+  if (!result) {
+    throw new AppError(httpStatus.NOT_FOUND, 'please provide the user id!');
+  }
+};
+
+export { updateRanks, sendNotification };

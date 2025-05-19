@@ -11,6 +11,9 @@ import notFound from './app/middlewares/notFound';
 import router from './app/routes';
 import { Server } from 'socket.io';
 import http from 'http';
+import { User } from './app/modules/User/user.model';
+import { USER_ROLE } from './app/modules/User/user.constant';
+import { sendNotification } from './app/modules/AppSystem/Constants/updateRank';
 
 const app: Application = express();
 const server = http.createServer(app);
@@ -93,7 +96,11 @@ io.on('connection', (socket) => {
 
   // Debug unknown events
   socket.onAny((event, ...args) => {
-    if (!['setup', 'logout', 'disconnect', "newInvest", 'newTicket'].includes(event)) {
+    if (
+      !['setup', 'logout', 'disconnect', 'newInvest', 'newTicket'].includes(
+        event,
+      )
+    ) {
       console.log(`Unhandled socket event: ${event}`, args);
     }
   });
@@ -104,6 +111,136 @@ io.on('connection', (socket) => {
       console.log('Invalid setup payload');
       return;
     }
+
+    //notification
+
+    socket.on('new user', async (info) => {
+      const users = await User.find({
+        role: USER_ROLE.admin,
+        _id: { $ne: info._id },
+      });
+
+      if (!info) {
+        console.log('data is missing!');
+        return;
+      }
+      users.forEach((user) => {
+        socket
+          .in(user._id.toString())
+          .emit('new user add message received', info);
+      });
+      await sendNotification(info)
+
+      const data = {
+        title: `congratulations!`,
+        subTitle: `welcome to our home!`,
+        user: userId,
+        type: 'single',
+      }
+      socket.in(info._id).emit('congrats new user', data);
+      await sendNotification(data)
+    });
+
+    socket.on('report', async (info) => {
+      const users = await User.find({
+        role: USER_ROLE.admin,
+        _id: { $ne: info._id },
+      });
+
+      if (!info) {
+        console.log('data is missing!');
+        return;
+      }
+      users.forEach((user) => {
+        socket.in(user._id.toString()).emit('report received', info);
+      });
+      await sendNotification(info)
+    });
+
+    socket.on('new raffles', async (info) => {
+      const users = await User.find({ _id: { $ne: info._id } });
+
+      if (!info) {
+        console.log('data is missing!');
+        return;
+      }
+      users.forEach((user) => {
+        socket.in(user._id.toString()).emit('raffles message received', info);
+      });
+    });
+
+    socket.on('get new tickets', async (info) => {
+      const users = await User.find({ _id: { $ne: info._id } });
+
+      if (!info) {
+        console.log('data is missing!');
+        return;
+      }
+      users.forEach((user) => {
+        socket.in(user._id.toString()).emit('ticket message received', info);
+      });
+    });
+
+    socket.on('invest', async (info) => {
+      const users = await User.find({ _id: { $ne: info._id } });
+
+      if (!info) {
+        console.log('data is missing!');
+        return;
+      }
+      users.forEach((user) => {
+        socket
+          .in(user._id.toString())
+          .emit('new invest message received', info);
+      });
+    });
+
+    socket.on('winner', async (info) => {
+      const users = await User.find({ _id: { $ne: info._id } });
+
+      if (!info) {
+        console.log('data is missing!');
+        return;
+      }
+      users.forEach((user) => {
+        socket.in(user._id.toString()).emit('winner message received', info);
+      });
+      const data =  {
+        title: `congratulations on winning raffles!`,
+        subTitle: `You have done a great job! we hope best wishes for you!`,
+        user: userId,
+        type: 'single',
+      }
+      socket.in(info._id).emit('congrats winner', data);
+    });
+
+    socket.on('join account', async (info) => {
+      const users = await User.find({
+        role: USER_ROLE.admin,
+        _id: { $ne: info._id },
+      });
+
+      if (!info) {
+        console.log('data is missing!');
+        return;
+      }
+      users.forEach((user) => {
+        socket
+          .in(user._id.toString())
+          .emit('new connected account message received', info);
+      });
+
+      const data = {
+        title: `congratulations on your new stripe connection!`,
+        subTitle: `welcome on your new connection with us! now you can withdraw money using connected account!s`,
+        user: userId,
+        type: 'single',
+      }
+
+      socket.in(info._id).emit('congrats on new stripe connector', data);
+    });
+
+    //noti finished
 
     const userId = userData._id;
     socket.data.userId = userId;
@@ -156,4 +293,4 @@ io.on('connection', (socket) => {
   });
 });
 
-export { app, server };
+export { app, server, io };

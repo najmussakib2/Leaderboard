@@ -9,7 +9,7 @@ import { UserValidation } from './user.validation';
 
 const router = express.Router();
 
-router.post('/create-user', UserControllers.createUser);
+router.post('/create-user', UserControllers.createUser); //socket
 
 router.post(
   '/change-status/:id',

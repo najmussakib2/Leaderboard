@@ -9,16 +9,22 @@ import { paymentSuccessQuery } from '../Interfaces/schema.interface';
 import { JwtPayload } from 'jsonwebtoken';
 import { TUser } from '../../User/user.interface';
 import { StripeAccount, Withdrawal } from '../Models/stripe.model';
+import { io } from '../../../../app';
 
 const stripe = new Stripe(config.stripe_secret_key as string);
 
-const checkoutPayment = async (userId: string, amount: number, host: string, protocol: string) => {
+const checkoutPayment = async (
+  userId: string,
+  amount: number,
+  host: string,
+  protocol: string,
+) => {
   if (amount <= 0 || !Number.isFinite(amount)) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Invalid payment amount');
   }
 
   const user = (await User.findById(userId).select(
-    'stripeCustomerId email name',
+    'stripeCustomerId email name _id',
   )) as TUser | null;
 
   if (!user) {
@@ -62,6 +68,8 @@ const checkoutPayment = async (userId: string, amount: number, host: string, pro
       userId,
       amount,
       type: 'Investment',
+      name: user.name,
+      email: user.email,
     },
     customer: user.stripeCustomerId,
     success_url: `${protocol}://${host}/api/v1/payments/success?session_id={CHECKOUT_SESSION_ID}`,
@@ -87,6 +95,13 @@ const onSucccess = async (query: paymentSuccessQuery) => {
   const userId = session.metadata?.userId as string;
   const amount = Number(session.metadata?.amount);
   const result = investMoney(userId, amount);
+
+  io.emit('invest', {
+    title: `New Investment from ${session.metadata?.name}`,
+    subTitle: `${session.metadata?.name} spent ${amount}`,
+    user: userId,
+    type: "global"
+  });
 
   return result;
 };

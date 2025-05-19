@@ -31,7 +31,6 @@ export interface TTicket {
   user: Types.ObjectId;
 }
 
-
 export interface TOTP {
   _id: Types.ObjectId;
   email: string;
@@ -39,6 +38,13 @@ export interface TOTP {
   expiresAt: Date;
 }
 
+export interface TNotification {
+  _id: Types.ObjectId;
+  user?: Types.ObjectId;
+  title: string;
+  subTitle: string;
+  type: string;
+}
 
 export interface paymentSuccessQuery extends ParsedQs {
   session_id?: string;

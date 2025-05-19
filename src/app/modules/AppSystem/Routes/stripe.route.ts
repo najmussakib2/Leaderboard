@@ -20,15 +20,15 @@ router.post(
 router.post(
   '/chekout-winner',
   auth(USER_ROLE.admin),
-  StripController.checkoutWinnerPayment,
+  StripController.checkoutWinnerPayment, //socket
 );
 
-router.get('/success', StripController.onSucccess);
+router.get('/success', StripController.onSucccess); //socket
 
 router.post(
   '/join-account',
   auth(USER_ROLE.admin, USER_ROLE.investor),
-  StripController.createConnectedStripeAccount,
+  StripController.createConnectedStripeAccount, //socket
 );
 
 export const StripeRoutes = router;

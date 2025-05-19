@@ -6,21 +6,21 @@ import { FameControllers } from '../Controllers/fame.controller';
 const router = express.Router();
 
 router.get(
-    '/most-viewed',
-    auth(USER_ROLE.admin, USER_ROLE.investor),
-    FameControllers.mostViewed,
-  );
+  '/most-viewed',
+  auth(USER_ROLE.admin, USER_ROLE.investor),
+  FameControllers.mostViewed,
+);
 
 router.get(
-    '/highest-investor',
-    auth(USER_ROLE.admin, USER_ROLE.investor),
-    FameControllers.highestInvestor,
-  );
+  '/highest-investor',
+  auth(USER_ROLE.admin, USER_ROLE.investor),
+  FameControllers.highestInvestor,
+);
 
 router.get(
-    '/consecutively-toper',
-    auth(USER_ROLE.admin, USER_ROLE.investor),
-    FameControllers.consecutivelyToper,
-  );
+  '/consecutively-toper',
+  auth(USER_ROLE.admin, USER_ROLE.investor),
+  FameControllers.consecutivelyToper,
+);
 
 export const FameRoutes = router;

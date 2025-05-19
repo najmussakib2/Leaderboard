@@ -5,7 +5,7 @@ import { InvestRoutes } from '../modules/AppSystem/Routes/invest.route';
 import { RankRoutes } from '../modules/AppSystem/Routes/rank.route';
 import { FameRoutes } from '../modules/AppSystem/Routes/fame.route';
 import { RufflesRoutes } from '../modules/AppSystem/Routes/ruffles.route';
-import { FAQTQRoutes } from '../modules/AppSystem/Routes/FAQTQ.route';
+import { FAQTCRoutes } from '../modules/AppSystem/Routes/FAQTC.route';
 import { StripeRoutes } from '../modules/AppSystem/Routes/stripe.route';
 
 const router = Router();
@@ -39,7 +39,7 @@ const moduleRoutes = [
   },
   {
     path: '/about',
-    route: FAQTQRoutes,
+    route: FAQTCRoutes,
   },
   {
     path: '/payments',

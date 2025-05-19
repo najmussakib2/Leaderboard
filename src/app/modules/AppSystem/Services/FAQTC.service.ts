@@ -26,7 +26,9 @@ const reportProblem = async (
   payload.user = new Types.ObjectId(userId);
 
   const user = await User.findOne({ _id: userId });
-
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'user not found!');
+  }
   const result = await Report.create(payload);
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, 'Failed to create!');
@@ -39,7 +41,7 @@ const reportProblem = async (
   return result;
 };
 
-const createTAQ = async (payload: { text: string }) => {
+const createTAC = async (payload: { text: string }) => {
   if (!payload) {
     throw new AppError(httpStatus.NOT_FOUND, 'please provide the data!');
   }
@@ -50,7 +52,7 @@ const createTAQ = async (payload: { text: string }) => {
   return result;
 };
 
-const getTAQ = async () => {
+const getTAC = async () => {
   const result = TAQ.find();
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, 'Failed to get!');
@@ -99,7 +101,7 @@ const updateReport = async (_id: string, payload: { text: string }) => {
   return result;
 };
 
-const updateTAQ = async (_id: string, payload: { text: string }) => {
+const updateTAC = async (_id: string, payload: { text: string }) => {
   if (!_id) {
     throw new AppError(httpStatus.NOT_FOUND, 'please provide the user id!');
   }
@@ -110,7 +112,7 @@ const updateTAQ = async (_id: string, payload: { text: string }) => {
   return result;
 };
 
-const deleteTAQ = async (_id: string) => {
+const deleteTAC = async (_id: string) => {
   if (!_id) {
     throw new AppError(httpStatus.NOT_FOUND, 'please provide the user id!');
   }
@@ -143,14 +145,14 @@ const deleteReport = async (_id: string) => {
   return result;
 };
 
-export const FAQTQServices = {
+export const FAQTCServices = {
   createFAQ,
-  createTAQ,
-  getTAQ,
+  createTAC,
+  getTAC,
   getFAQ,
   updateFAQ,
-  updateTAQ,
-  deleteTAQ,
+  updateTAC,
+  deleteTAC,
   deleteFAQ,
   reportProblem,
   getReports,

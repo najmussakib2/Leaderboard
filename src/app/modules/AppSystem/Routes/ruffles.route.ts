@@ -5,14 +5,14 @@ import { USER_ROLE } from '../../User/user.constant';
 
 const router = express.Router();
 
-router.post('/', auth(USER_ROLE.admin), TicketControllers.createRuffles);
+router.post('/', auth(USER_ROLE.admin), TicketControllers.createRuffles); //socket
 
 router.delete('/:id', auth(USER_ROLE.admin), TicketControllers.deleteRuffles);
 
 router.post(
   '/ticket',
   auth(USER_ROLE.investor, USER_ROLE.admin),
-  TicketControllers.createTicket,
+  TicketControllers.createTicket, //socket
 );
 
 router.get(
@@ -37,12 +37,6 @@ router.get(
   '/ticket/topper',
   auth(USER_ROLE.admin),
   TicketControllers.getMaxTicketHolder,
-);
-
-router.post(
-  '/raise-topper/:id',
-  auth(USER_ROLE.admin),
-  TicketControllers.raiseTopper,
 );
 
 export const RufflesRoutes = router;

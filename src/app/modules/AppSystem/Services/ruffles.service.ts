@@ -2,8 +2,6 @@ import AppError from '../../../errors/AppError';
 import httpStatus from 'http-status';
 import { Ticket } from '../Models/ticket.model';
 import mongoose, { Types } from 'mongoose';
-import { Raised } from '../Models/raised.model';
-import { User } from '../../User/user.model';
 import { Ruffles } from '../Models/ruffles.model';
 
 const createRuffles = async (payload: {
@@ -18,6 +16,8 @@ const createRuffles = async (payload: {
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, 'Failed to create!');
   }
+
+
   return result;
 };
 
@@ -40,6 +40,7 @@ const createTicket = async (payload: { qty: number; user: string }) => {
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, 'Failed to create!');
   }
+
   return result;
 };
 
@@ -167,35 +168,6 @@ const getMaxTicketHolder = async () => {
   return topTicketHolder;
 };
 
-const raiseTopper = async (userId: string, payload: { number: number }) => {
-  if (!payload || !userId) {
-    throw new AppError(httpStatus.NOT_FOUND, 'please provide userId/bonus!');
-  }
-  const result1 = await Raised.create({
-    amount: payload.number,
-    type: 'winner',
-    user: userId,
-  });
-  if (!result1) {
-    throw new AppError(httpStatus.NOT_FOUND, 'Failed to create!');
-  }
-  const result2 = await User.findOneAndUpdate(
-    { _id: userId },
-    {
-      $inc: {
-        withdraw: payload.number,
-        totalRaised: payload.number,
-      },
-    },
-    { new: true },
-  );
-  if (!result2) {
-    throw new AppError(httpStatus.NOT_FOUND, 'Failed to update!');
-  }
-
-  return null;
-};
-
 const deleteRuffles = async (_id: string) => {
   if (!_id) {
     throw new AppError(httpStatus.NOT_FOUND, 'id not found!');
@@ -226,6 +198,5 @@ export const TicketServices = {
   getTickets,
   getMyTickets,
   getMaxTicketHolder,
-  raiseTopper,
   deleteRuffles,
 };

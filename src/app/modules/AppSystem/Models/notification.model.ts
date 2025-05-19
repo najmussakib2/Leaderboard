@@ -1,25 +1,25 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 import { Schema, model } from 'mongoose';
-import { TMedia } from '../Interfaces/schema.interface';
+import { TNotification } from '../Interfaces/schema.interface';
 
-const mediaSchema = new Schema<TMedia>(
+const notificationSchema = new Schema<TNotification>(
   {
-    name: {
+    title: {
       type: String,
       required: true,
     },
-    link: {
+    subTitle: {
       type: String,
       required: true,
     },
-    iconImg: {
+    type: {
       type: String,
       required: true,
+      enum: ['global', 'single'],
     },
     user: {
       type: Schema.Types.ObjectId,
       ref: 'User',
-      required: true,
     },
   },
   {
@@ -27,4 +27,7 @@ const mediaSchema = new Schema<TMedia>(
   },
 );
 
-export const SocialMedia = model<TMedia>('SocialMedia', mediaSchema);
+export const Notification = model<TNotification>(
+  'Notification',
+  notificationSchema,
+);
