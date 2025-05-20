@@ -126,3 +126,45 @@ export const paymentFailed = `<!DOCTYPE html>
 </body>
 </html>
 `
+const date = new Date(Date.now());
+export const serverHome = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Server Status</title>
+      <style>
+        body {
+          margin: 0;
+          padding: 0;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          background-color: #f4fdf8;
+          color: #173616;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+          text-align: center;
+          flex-direction: column;
+        }
+        h1 {
+          font-size: 2.5rem;
+          margin-bottom: 10px;
+        }
+        p {
+          font-size: 1.2rem;
+          margin-top: 0;
+        }
+        .icon {
+          font-size: 4rem;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="icon">🚀</div>
+      <h1>Beep-beep! The server is alive and kicking.</h1>
+      <p>🕒 ${date}</p>
+    </body>
+    </html>
+  `

@@ -39,7 +39,7 @@ export interface TOTP {
 }
 
 export interface TNotification {
-  _id: Types.ObjectId;
+  _id?: Types.ObjectId;
   user?: Types.ObjectId;
   title: string;
   subTitle: string;

@@ -15,7 +15,7 @@ const notificationSchema = new Schema<TNotification>(
     type: {
       type: String,
       required: true,
-      enum: ['global', 'single'],
+      enum: ['global', 'single','forAdmin'],
     },
     user: {
       type: Schema.Types.ObjectId,
