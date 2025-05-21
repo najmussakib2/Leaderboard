@@ -46,14 +46,14 @@ router.get(
 
 router.patch(
   '/update-profileImg',
-  auth(),
+  auth(USER_ROLE.admin, USER_ROLE.investor),
   upload.single('file'),
   UserControllers.updateProfileImg,
 );
 
 router.patch(
-  '/add-view',
-  auth(),
+  '/add-view/:id',
+  auth(USER_ROLE.admin, USER_ROLE.investor),
   UserControllers.addView,
 );
 

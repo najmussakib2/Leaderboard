@@ -4,7 +4,7 @@ import { Investment } from '../Models/invest.model';
 const mostViewed = async () => {
   const user = await User.findOne()
     .sort({ views: -1 })
-    .select('name country profileImg views _id')
+    .select('name country profileImg views _id gender')
     .lean();
 
   return user;
@@ -24,10 +24,9 @@ const highestInvestor = async () => {
 
   if (!result.length) return null;
 
-  const user = await User.findById(result[0]._id)
-    .select('name country profileImg views _id') // exclude password
+  const user = await User.findOne({ _id: result[0]._id })
+    .select('name country profileImg views _id gender')
     .lean();
-
   return {
     ...user,
     totalInvested: result[0].totalInvested,
@@ -44,7 +43,7 @@ const consecutivelyToper = async () => {
         _id: 1,
         topRanks: {
           $filter: {
-            input: '$prevRank',
+            input: { $ifNull: ['$prevRank', []] },
             as: 'rank',
             cond: {
               $and: [
@@ -66,9 +65,8 @@ const consecutivelyToper = async () => {
   ]);
 
   if (!result.length) return null;
-
-  const user = await User.findById(result[0].user)
-    .select('name country profileImg views _id')
+  const user = await User.findById(result[0]._id)
+    .select('name country profileImg views _id gender')
     .lean();
 
   return {

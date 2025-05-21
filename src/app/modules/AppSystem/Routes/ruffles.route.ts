@@ -28,15 +28,19 @@ router.get(
 );
 
 router.get(
+  '/max-ticket-holder',
+  (req, res, next) => {
+    console.log('38-> ');
+    next();
+  },
+  auth(USER_ROLE.admin),
+  TicketControllers.getMaxTicketHolder,
+);
+router.get(
   '/ticket/:id',
   auth(USER_ROLE.investor, USER_ROLE.admin),
   TicketControllers.getTicketDetailes,
 );
 
-router.get(
-  '/ticket/topper',
-  auth(USER_ROLE.admin),
-  TicketControllers.getMaxTicketHolder,
-);
 
 export const RufflesRoutes = router;

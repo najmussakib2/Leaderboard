@@ -115,14 +115,14 @@ const userSchema = new Schema<TUser, UserModel>(
     },
     stripeCustomerId: { type: String },
     userCode: {
-      type: Number,
-      default: 0,
+      type: String,
+      required: true
     },
-  //social media
-    facebook:{ type: String },
-    linkedin:{ type: String },
-    instagram:{ type: String },
-    twitter:{ type: String },
+    //social media
+    facebook: { type: String },
+    linkedin: { type: String },
+    instagram: { type: String },
+    twitter: { type: String },
   },
   {
     timestamps: true,

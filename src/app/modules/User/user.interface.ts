@@ -35,7 +35,7 @@ export interface TUser extends Document {
   withdraw?: number;
   stripeCustomerId?: string;
   hasPaymentDetails?: boolean;
-  userCode: number;
+  userCode: string;
   facebook?: string;
   linkedin?: string;
   instagram?: string;

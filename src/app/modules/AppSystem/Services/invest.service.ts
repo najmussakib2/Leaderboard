@@ -136,47 +136,61 @@ export const investMoney = async (userId: string, amount: number) => {
 
 export const raisedMoney = async (userId: string, amount: number) => {
   if (!userId || isNaN(amount)) {
-    throw new AppError(httpStatus.BAD_REQUEST, 'Invalid session metadata');
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'User ID or amount not provided',
+    );
   }
-
-  // 3. Create a new Raised record
+  // 1. Create new raised record
   const result = await Raised.create({
     user: userId,
     type: 'winner',
     amount,
   });
-
-  // 4. Calculate user's total raised
+  if (!result) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'Failed to create raised record',
+    );
+  }
+  // 2. Calculate total raised for user
   const totalRaised = await Raised.aggregate([
     { $match: { user: new Types.ObjectId(userId) } },
     { $group: { _id: null, total: { $sum: '$amount' } } },
-  ]).then((res) => res[0]?.total || 0);
-
-  // 5. Determine new raised rank
+  ]).then((res) => res[0]?.total ?? 0); // 0 is valid, so no error
+  // 3. Calculate new rank
   const newRaisedRank = await User.countDocuments({
     totalRaised: { $gt: totalRaised },
-  }).then((count) => count + 1); // +1 because rank starts at 1
+  }).then((count) => count + 1);
 
-  // 6. Fetch and update user
-  const user = await User.findById(userId);
+  // 4. Fetch user
+  const user = await User.findById(userId).lean();
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'User not found');
   }
+  // 5. Prepare updated rank history
+  const updatedPrevRanks =
+    user.raisedRank !== newRaisedRank
+      ? [
+          ...(user.prevRaisedRank || []),
+          { date: new Date(), number: user.raisedRank ?? 0 },
+        ]
+      : user.prevRaisedRank;
 
-  // Update rank history if changed
-  if (user.raisedRank !== newRaisedRank) {
-    user.prevRaisedRank?.push({
-      date: new Date(),
-      number: user.raisedRank ?? 0,
-    });
-    user.raisedRank = newRaisedRank;
+  // 6. Perform user update in one go
+  const updateUser = await User.findByIdAndUpdate(userId, {
+    $set: {
+      totalRaised,
+      raisedRank: newRaisedRank,
+      prevRaisedRank: updatedPrevRanks,
+    },
+    $inc: {
+      withdraw: amount,
+    },
+  });
+  if (!updateUser) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Failed to Update User!');
   }
-
-  // Update user totals
-  user.totalRaised = totalRaised;
-  user.withdraw = (user.withdraw || 0) + amount;
-
-  await user.save();
 
   return result;
 };

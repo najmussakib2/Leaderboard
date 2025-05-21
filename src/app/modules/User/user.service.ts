@@ -25,6 +25,8 @@ const createUserIntoDB = async (token: string) => {
 
   userData.userCode = generateCode();
 
+  userData.role = 'investor'
+
   try {
     const user = await User.create(userData); // array
 
@@ -144,7 +146,7 @@ const updateProfileImgInDB = async (
     profileImg = secureUrl;
   }
   const result = await User.updateOne(
-    { id: userId },
+    { _id: userId },
     { profileImg },
     { new: true },
   );
@@ -165,7 +167,7 @@ const updateUser = async (_id: string, payload: Partial<TUser>) => {
 const deleteUser = async (_id: string) => {
   try {
     if (!_id) throw new AppError(httpStatus.NOT_FOUND, 'user id not found!');
-    const result = await User.deleteOne({ _id });
+    const result = await User.findOneAndUpdate({ _id }, {isDeleted: true});
     if (!result)
       throw new AppError(
         httpStatus.INTERNAL_SERVER_ERROR,

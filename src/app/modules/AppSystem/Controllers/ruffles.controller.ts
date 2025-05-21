@@ -52,7 +52,7 @@ const getMyTickets = catchAsync(async (req, res) => {
 });
 
 const getTicketDetailes = catchAsync(async (req, res) => {
-  const {id} = req.params
+  const { id } = req.params;
   const result = await TicketServices.getMyTickets(id);
 
   sendResponse(res, {
@@ -64,8 +64,8 @@ const getTicketDetailes = catchAsync(async (req, res) => {
 });
 
 const getMaxTicketHolder = catchAsync(async (req, res) => {
+  console.log('hello');
   const result = await TicketServices.getMaxTicketHolder();
-
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -75,7 +75,7 @@ const getMaxTicketHolder = catchAsync(async (req, res) => {
 });
 
 const deleteRuffles = catchAsync(async (req, res) => {
-  const {id} = req.params
+  const { id } = req.params;
   const result = await TicketServices.deleteRuffles(id);
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -92,5 +92,5 @@ export const TicketControllers = {
   getMyTickets,
   getTicketDetailes,
   getMaxTicketHolder,
-  deleteRuffles
+  deleteRuffles,
 };

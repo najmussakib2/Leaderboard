@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 import { Schema, Types, model } from 'mongoose';
 
-const faqSchema = new Schema<{question: string, answer: string }>(
+const faqSchema = new Schema<{question: string, answer: string}>(
   {
     question: {
       type: String,

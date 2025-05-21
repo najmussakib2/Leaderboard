@@ -64,7 +64,6 @@ const registerValidationSchema = z.object({
     gender: z.enum(['Male', 'Female']),
     age: z.string().min(1),
     profileImg: z.string().url().optional(),
-    role: z.enum(['investor', 'admin']),
     recommendedBy: z
       .string()
       .refine((val) => Types.ObjectId.isValid(val), {

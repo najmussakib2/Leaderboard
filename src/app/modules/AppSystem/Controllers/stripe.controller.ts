@@ -12,7 +12,7 @@ const checkoutPayment = catchAsync(async (req, res) => {
     req.user.userId,
     amount,
     host as string,
-    protocol
+    protocol,
   );
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -35,7 +35,7 @@ const withdrawToBank = catchAsync(async (req, res) => {
 const checkoutWinnerPayment = catchAsync(async (req, res) => {
   const { amount, userId } = req.body;
   const result = await StripServices.checkoutWinnerPayment(userId, amount);
-  res.send();
+
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -64,10 +64,17 @@ const onSucccess = catchAsync(async (req, res) => {
   await StripServices.onSucccess(req.query);
   return res.send(paymentSuccess);
 });
+const onConnectedStripeAccountSuccess = catchAsync(async (req, res) => {
+  const result = await StripServices.onConnectedStripeAccountSuccess(
+    req.params.accountId,
+  );
+  return res.send(result);
+});
 
 export const StripController = {
   checkoutPayment,
   onSucccess,
+  onConnectedStripeAccountSuccess,
   checkoutWinnerPayment,
   createConnectedStripeAccount,
   withdrawToBank,

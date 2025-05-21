@@ -31,7 +31,7 @@ const updateRanks = async () => {
         const newRank = i + 1;
         const total = totals[i].total;
 
-        const existingRank = await User.findOne({ _id: userId }).session(
+        const existingRank = await User.findOne({ _id: userId, isDeleted: false }).session(
           session,
         );
 

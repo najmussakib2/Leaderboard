@@ -31,4 +31,9 @@ router.post(
   StripController.createConnectedStripeAccount, //socket
 );
 
+router.get(
+  '/success-account/:accountId',
+  StripController.onConnectedStripeAccountSuccess,
+);
+
 export const StripeRoutes = router;

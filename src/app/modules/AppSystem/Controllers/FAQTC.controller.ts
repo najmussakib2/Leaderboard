@@ -107,7 +107,7 @@ const deleteTAC = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'TAQ Updated Successfully!',
+    message: 'TAQ Deleted Successfully!',
     data: result,
   });
 });
@@ -118,7 +118,7 @@ const deleteFAQ = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'TAQ Updated Successfully!',
+    message: 'TAQ Deleted Successfully!',
     data: result,
   });
 });
@@ -129,7 +129,7 @@ const deleteReport = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Report Updated Successfully!',
+    message: 'Report Deleted Successfully!',
     data: result,
   });
 });

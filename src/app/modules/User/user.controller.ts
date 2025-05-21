@@ -6,10 +6,9 @@ import { UserServices } from './user.service';
 
 const createUser = catchAsync(async (req, res) => {
   const token = req.headers.authorization as string;
-
   const result = await UserServices.createUserIntoDB(token);
   const { refreshToken, accessToken } = result;
-  
+
   res.cookie('refreshToken', refreshToken, {
     secure: config.NODE_ENV === 'production',
     httpOnly: true,
@@ -20,7 +19,7 @@ const createUser = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'User is logged in successfully!',
+    message: 'User is created in successfully!',
     data: { accessToken },
   });
 });
@@ -63,7 +62,7 @@ const changeStatus = catchAsync(async (req, res) => {
 });
 
 const addView = catchAsync(async (req, res) => {
-  const {id} = req.params;
+  const { id } = req.params;
   const result = await UserServices.addView(id);
 
   sendResponse(res, {
@@ -83,7 +82,6 @@ const updateProfileImg = catchAsync(async (req, res) => {
     data: result,
   });
 });
-
 
 const updateUser = catchAsync(async (req, res) => {
   const id = req.params.id;
@@ -143,5 +141,5 @@ export const UserControllers = {
   updateUser,
   deleteUser,
   getAllUsers,
-  getAllRefferdUsers
+  getAllRefferdUsers,
 };

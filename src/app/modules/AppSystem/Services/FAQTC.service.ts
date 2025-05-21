@@ -83,18 +83,22 @@ const updateFAQ = async (
   if (!_id) {
     throw new AppError(httpStatus.NOT_FOUND, 'please provide the user id!');
   }
-  const result = await FAQ.findOneAndUpdate({ _id }, payload);
+  const result = await FAQ.findOneAndUpdate({ _id }, payload, { new: true });
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, 'Failed to update!');
   }
   return result;
 };
-
 const updateReport = async (_id: string, payload: { text: string }) => {
   if (!_id) {
-    throw new AppError(httpStatus.NOT_FOUND, 'please provide the user id!');
+    throw new AppError(httpStatus.BAD_REQUEST, 'Invalid or missing ID!');
   }
-  const result = await FAQ.findOneAndUpdate({ _id }, payload);
+  console.log(_id, payload);
+  const result = await Report.findOneAndUpdate(
+    { _id },
+    { $set: payload },
+    { new: true },
+  );
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, 'Failed to update!');
   }
@@ -105,7 +109,7 @@ const updateTAC = async (_id: string, payload: { text: string }) => {
   if (!_id) {
     throw new AppError(httpStatus.NOT_FOUND, 'please provide the user id!');
   }
-  const result = await TAQ.findOneAndUpdate({ _id }, payload);
+  const result = await TAQ.findOneAndUpdate({ _id }, payload, { new: true });
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, 'Failed to update!');
   }

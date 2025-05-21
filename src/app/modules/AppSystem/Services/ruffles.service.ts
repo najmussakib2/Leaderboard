@@ -17,7 +17,6 @@ const createRuffles = async (payload: {
     throw new AppError(httpStatus.NOT_FOUND, 'Failed to create!');
   }
 
-
   return result;
 };
 
@@ -127,6 +126,7 @@ const getMyTickets = async (userId: string) => {
 };
 
 const getMaxTicketHolder = async () => {
+  console.log('hello');
   const topTicketHolder = await Ticket.aggregate([
     {
       $group: {
@@ -163,7 +163,7 @@ const getMaxTicketHolder = async () => {
   ]);
 
   if (!topTicketHolder) {
-    throw new AppError(httpStatus.BAD_REQUEST, 'faild to find!');
+    throw new AppError(httpStatus.BAD_REQUEST, 'failed to find!');
   }
   return topTicketHolder;
 };

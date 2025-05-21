@@ -10,6 +10,7 @@ import { JwtPayload } from 'jsonwebtoken';
 import { TUser } from '../../User/user.interface';
 import { StripeAccount, Withdrawal } from '../Models/stripe.model';
 import { io } from '../../../../app';
+import { successHTMLstripeConnection } from '../Constants/app.constant';
 
 const stripe = new Stripe(config.stripe_secret_key as string);
 
@@ -24,7 +25,7 @@ const checkoutPayment = async (
   }
 
   const user = (await User.findById(userId).select(
-    'stripeCustomerId email name _id',
+    'stripeCustomerId email name _id gender',
   )) as TUser | null;
 
   if (!user) {
@@ -73,7 +74,7 @@ const checkoutPayment = async (
     },
     customer: user.stripeCustomerId,
     success_url: `${protocol}://${host}/api/v1/payments/success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: '/',
+    cancel_url: `${config.origin_link}`,
   });
 
   return session.url;
@@ -84,25 +85,6 @@ const checkoutWinnerPayment = async (userId: string, amount: number) => {
     throw new AppError(httpStatus.BAD_REQUEST, 'missing some data!');
   }
   const result = await raisedMoney(userId, amount);
-  return result;
-};
-
-const onSucccess = async (query: paymentSuccessQuery) => {
-  if (!query.session_id) {
-    throw new AppError(httpStatus.NOT_FOUND, 'query not found');
-  }
-  const session = await stripe.checkout.sessions.retrieve(query.session_id);
-  const userId = session.metadata?.userId as string;
-  const amount = Number(session.metadata?.amount);
-  const result = investMoney(userId, amount);
-
-  io.emit('invest', {
-    title: `New Investment from ${session.metadata?.name}`,
-    subTitle: `${session.metadata?.name} spent ${amount}`,
-    user: userId,
-    type: "global"
-  });
-
   return result;
 };
 
@@ -127,8 +109,8 @@ const createConnectedStripeAccount = async (
 
     const onboardingLink = await stripe.accountLinks.create({
       account: existingAccount.accountId,
-      refresh_url: `${protocol}://${host}/api/v1/payment/refreshAccountConnect/${existingAccount.accountId}`,
-      return_url: `${protocol}://${host}/api/v1/payment/success-account/${existingAccount.accountId}`,
+      refresh_url: `${protocol}://${host}/api/v1/payments/refreshAccountConnect/${existingAccount.accountId}`,
+      return_url: `${protocol}://${host}/api/v1/payments/success-account/${existingAccount.accountId}`,
       type: 'account_onboarding',
     });
     // console.log('onboardingLink-1', onboardingLink);
@@ -155,8 +137,8 @@ const createConnectedStripeAccount = async (
 
   const onboardingLink = await stripe.accountLinks.create({
     account: account.id,
-    refresh_url: `${protocol}://${host}/api/v1/payment/refreshAccountConnect/${account.id}`,
-    return_url: `${protocol}://${host}/api/v1/payment/success-account/${account.id}`,
+    refresh_url: `${protocol}://${host}/api/v1/payments/refreshAccountConnect/${account.id}`,
+    return_url: `${protocol}://${host}/api/v1/payments/success-account/${account.id}`,
     type: 'account_onboarding',
   });
   console.log('onboardingLink-2', onboardingLink);
@@ -166,6 +148,56 @@ const createConnectedStripeAccount = async (
     message: 'Please complete your account',
     url: onboardingLink.url,
   };
+};
+
+const onSucccess = async (query: paymentSuccessQuery) => {
+  if (!query.session_id) {
+    throw new AppError(httpStatus.NOT_FOUND, 'query not found');
+  }
+  const session = await stripe.checkout.sessions.retrieve(query.session_id);
+  const userId = session.metadata?.userId as string;
+  const amount = Number(session.metadata?.amount);
+  const result = investMoney(userId, amount);
+
+  io.emit('invest', {
+    title: `New Investment from ${session.metadata?.name}`,
+    subTitle: `${session.metadata?.name} spent $${amount} today!`,
+    user: userId,
+    type: 'global',
+  });
+
+  return result;
+};
+
+const onConnectedStripeAccountSuccess = async (accountId: string) => {
+  if (!accountId) {
+    throw new AppError(httpStatus.NOT_FOUND, 'account Id not found');
+  }
+
+  type PopulatedUser = {
+    name: string;
+    email: string;
+    profileImg: string;
+  };
+
+  const stripeAccounts = await StripeAccount.findOne({ accountId }).populate({
+    path: 'user',
+    select: 'name email profileImg',
+  });
+
+  if (!stripeAccounts) {
+    throw new AppError(httpStatus.NOT_FOUND, 'account not found');
+  }
+
+  const user = stripeAccounts.user as unknown as PopulatedUser;
+
+  const html = successHTMLstripeConnection({
+    name: user.name,
+    email: user.email,
+    profileImg: user.profileImg,
+  });
+
+  return html;
 };
 const withdrawToBank = async (userId: string, amount: number) => {
   const userAccount = await StripeAccount.findOne({ user: userId });
@@ -214,4 +246,5 @@ export const StripServices = {
   checkoutWinnerPayment,
   createConnectedStripeAccount,
   withdrawToBank,
+  onConnectedStripeAccountSuccess,
 };
